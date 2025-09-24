@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Immobilien Kalkulator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🎉 Immobilien Kalkulator - Erfolgreich erstellt!</h1>
+    
+    <div class="test-result success">
+        ✅ <strong>Webapp erfolgreich erstellt</strong><br>
+        Die responsive Immobilien-Kalkulator Webapp ist bereit!
+    </div>
+
+    <div class="test-result info">
+        <strong>Neue Features hinzugefügt:</strong><br>
+        📊 Prozentuale Eingabe für Kaufnebenkosten<br>
+        🔄 Umschaltung zwischen absoluten (€) und prozentualen (%) Werten<br>
+        📋 Vorgefertigte Nebenkosten-Vorlagen für verschiedene Bundesländer<br>
+        💡 Automatische Berechnung bei prozentualer Eingabe<br>
+        📱 Vollständig responsive für Smartphone-Nutzung
+    </div>
+
+    <h2>🚀 So starten Sie die Webapp:</h2>
+    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+npm install
+npm run dev
+    </pre>
+
+    <h2>📱 Features der Webapp:</h2>
+    <ul>
+        <li><strong>Dashboard:</strong> Übersicht aller Kennzahlen</li>
+        <li><strong>Investitionsrechner:</strong> 
+            <ul>
+                <li>Kaufpreis und Wohnfläche eingeben</li>
+                <li>Nebenkosten wahlweise in € oder % vom Kaufpreis</li>
+                <li>Vorlagen für typische Nebenkosten nach Bundesland</li>
+                <li>Automatische Berechnung von Renditen und Cashflow</li>
+            </ul>
+        </li>
+        <li><strong>Cashflow-Analyse:</strong> Langfristige Projektion mit Steigerungsraten</li>
+        <li><strong>Diagramme:</strong> Visualisierung aller wichtigen Daten</li>
+    </ul>
+
+    <h2>🔧 Technische Details:</h2>
+    <ul>
+        <li><strong>Frontend:</strong> React 18 + Vite</li>
+        <li><strong>Styling:</strong> Tailwind CSS (Mobile-First)</li>
+        <li><strong>Charts:</strong> Recharts für responsive Diagramme</li>
+        <li><strong>Icons:</strong> Lucide React</li>
+        <li><strong>Routing:</strong> React Router</li>
+    </ul>
+
+    <h2>💡 Neue Nebenkosten-Funktionen:</h2>
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+        <strong>Beispiel für prozentuale Eingabe:</strong><br>
+        • Makler: 3,57% (statt 8.925€ bei 250.000€ Kaufpreis)<br>
+        • Notar: 1,5% (statt 3.750€)<br>
+        • Grunderwerbssteuer: 6,0% (statt 15.000€)<br>
+        • Sonstige: 0,5% (statt 1.250€)<br><br>
+        
+        <strong>Vorteile:</strong><br>
+        ✅ Einfacher bei verschiedenen Kaufpreisen<br>
+        ✅ Realitätsnäher (Nebenkosten sind meist prozentual)<br>
+        ✅ Schnelle Anpassung mit Bundesland-Vorlagen<br>
+        ✅ Automatische Umrechnung wird angezeigt
+    </div>
+
+    <p><strong>Die Webapp läuft auf:</strong> <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></p>
+</body>
+</html>
