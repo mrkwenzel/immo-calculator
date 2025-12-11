@@ -5,11 +5,13 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 ## Features
 
 ### 📊 Dashboard
+
 - Übersicht aller wichtigen Kennzahlen
 - Gesamtinvestition, Renditen und Cashflow auf einen Blick
 - Schnellzugriff auf alle Funktionen
 
 ### 🧮 Investitionsrechner
+
 - Eingabe von Kaufpreis und Wohnfläche
 - Detaillierte Kaufnebenkosten (Makler, Notar, Grunderwerbssteuer, Sonstige)
 - Mietdaten und Bewirtschaftungskosten
@@ -21,6 +23,7 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - Bewertung der Investition mit Ampelsystem
 
 ### 💰 Cashflow-Analyse
+
 - Langfristige Cashflow-Projektion (1-30 Jahre)
 - Berücksichtigung von Miet- und Kostensteigerungen
 - Break-Even Analyse
@@ -28,6 +31,7 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - Detaillierte Jahrestabelle
 
 ### 📈 Diagramme & Visualisierungen
+
 - Jährliche Cashflow-Entwicklung (Balkendiagramm)
 - Kumulierter Cashflow über Zeit (Liniendiagramm)
 - Investitionskosten-Verteilung (Kreisdiagramm)
@@ -37,6 +41,7 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 ## Technische Details
 
 ### Frontend-Stack
+
 - **React 18** - Moderne UI-Bibliothek
 - **Vite** - Schneller Build-Tool
 - **Tailwind CSS** - Utility-first CSS Framework
@@ -45,19 +50,21 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - **Lucide React** - Moderne Icon-Bibliothek
 
 ### Responsive Design
+
 - **Mobile First** - Optimiert für Smartphones
 - **Tablet-freundlich** - Angepasste Layouts für Tablets
 - **Desktop-optimiert** - Vollständige Funktionalität auf großen Bildschirmen
 - **Touch-freundlich** - Große Buttons und einfache Navigation
 
 ### Features für Mobile
+
 - Hamburger-Menü für Navigation
 - Optimierte Eingabefelder
 - Scrollbare Tabellen
 - Responsive Diagramme
 - Touch-optimierte Bedienung
 
-## Installation & Start
+## Installation & Start (lokal)
 
 ```bash
 # Dependencies installieren
@@ -73,6 +80,22 @@ npm run build
 npm run preview
 ```
 
+## Docker Image bauen
+
+Folgendes Kommando aufrufen:
+
+```bash
+docker build -t immo-calculator .
+```
+
+## Container starten
+
+```bash
+docker run -p 8080:80 immo-calculator
+```
+
+## App aufrufen
+
 Die Webapp läuft standardmäßig auf `http://localhost:3000`
 
 ## Verwendung
@@ -85,22 +108,26 @@ Die Webapp läuft standardmäßig auf `http://localhost:3000`
 ### Eingabefelder
 
 **Grunddaten:**
+
 - Kaufpreis in Euro
 - Wohnfläche in m²
 
 **Kaufnebenkosten:**
+
 - Maklergebühren
 - Notarkosten
 - Grunderwerbssteuer
 - Sonstige Kosten
 
 **Mietdaten:**
+
 - Nettokaltmiete pro Monat
 - Bewirtschaftungskosten pro Monat
 
 ### Berechnungen
 
 Die Webapp berechnet automatisch:
+
 - **Gesamtinvestition** = Kaufpreis + Nebenkosten
 - **Kaufpreis pro m²** = Kaufpreis / Wohnfläche
 - **Bruttomietrendite** = (Jahresmiete / Gesamtinvestition) × 100
@@ -116,7 +143,7 @@ Die Webapp berechnet automatisch:
 
 ## Projektstruktur
 
-```
+```text
 src/
 ├── components/          # React Komponenten
 │   ├── Navigation.jsx   # Hauptnavigation
@@ -131,9 +158,10 @@ src/
 └── index.css          # Globale Styles
 ```
 
-## Anpassungen
+## Weitere mögliche Anpassungen
 
 Die Webapp kann einfach erweitert werden:
+
 - Neue Berechnungsfelder hinzufügen
 - Zusätzliche Diagrammtypen
 - Export-Funktionen (PDF, Excel)
