@@ -33,12 +33,14 @@ const FinancingPage = () => {
                     <ResultsDisplay
                         state={state}
                         showFinancing={true}
-                        showCashflow={true}
+                        showCashflow={false}
                     />
 
                     <InvestmentRating
                         bruttomietrendite={state.bruttomietrendite}
                         monatlicheCashflow={state.monatlicheCashflow}
+                        eigenkapitalRendite={state.eigenkapitalRendite}
+                        hideGeneralRatings={true}
                     />
                 </div>
             </div>

@@ -120,13 +120,6 @@ const ResultsDisplay = ({
                                     {formatCurrency(state.cashflowNachBank)}
                                 </span>
                             </div>
-
-                            <div className="flex justify-between items-center pt-2 border-t border-blue-200 mt-2">
-                                <span className="text-blue-800 font-medium flex items-center gap-1">
-                                    <TrendingUp className="w-3 h-3" /> EK-Rendite:
-                                </span>
-                                <span className="font-bold text-blue-900">{formatPercent(state.eigenkapitalRendite)}%</span>
-                            </div>
                         </div>
                     </div>
                 )}

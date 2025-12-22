@@ -1,12 +1,48 @@
 import React from 'react'
 
-const InvestmentRating = ({ bruttomietrendite, monatlicheCashflow, hausgeldQuote = 0, showCostDistribution = false, hideGeneralRatings = false }) => {
+const InvestmentRating = ({
+    bruttomietrendite,
+    monatlicheCashflow,
+    eigenkapitalRendite = null,
+    hausgeldQuote = 0,
+    showCostDistribution = false,
+    hideGeneralRatings = false
+}) => {
+    const showEkRendite = eigenkapitalRendite !== null;
+
+    if (hideGeneralRatings && !showCostDistribution && !showEkRendite) return null;
+
     return (
         <div className="card">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Bewertung
             </h3>
             <div className="space-y-4">
+                {/* EK-Rendite Rating (New) */}
+                {showEkRendite && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-2">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-gray-800 font-medium">EK-Rendite:</span>
+                            <span className="text-gray-900 font-bold text-lg">
+                                {eigenkapitalRendite.toFixed(2)}%
+                            </span>
+                        </div>
+                        {eigenkapitalRendite >= 10 ? (
+                            <p className="text-[10px] text-green-600 font-medium italic">
+                                ✓ Exzellente Hebelwirkung des Kapitals
+                            </p>
+                        ) : eigenkapitalRendite >= 5 ? (
+                            <p className="text-[10px] text-blue-600 font-medium italic">
+                                ✓ Solide Eigenkapital-Rentabilität
+                            </p>
+                        ) : (
+                            <p className="text-[10px] text-orange-600 font-medium italic">
+                                ! Geringe Hebelwirkung bei aktuellem Zins
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 {showCostDistribution && (
                     <div className="space-y-2 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <h4 className="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2 mb-3">
