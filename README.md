@@ -134,7 +134,7 @@ Die Webapp berechnet automatisch:
 
 - **Gesamtinvestition** = Kaufpreis + Nebenkosten
 - **Hausgeld** = Umlagefähig + Nicht-umlagefähig
-- **Operativer Cashflow** = Gesamtmiete - nicht-umlagefähige Kosten
+- **Operativer Cashflow** = Gesamtmiete - nicht-umlagefähiges Hausgeld
 - **Cashflow nach Bank** = Operativer Cashflow - Bankrate (der gewählten Darlehen)
 - **Bruttomietrendite** = (Jahresmiete / Gesamtinvestition) × 100
 - **Eigenkapital-Rendite** = ((Monatlicher Cashflow nach Bank × 12) / Eigenkapital) × 100
@@ -149,10 +149,12 @@ src/
 │   │   ├── AncillaryCostsForm.jsx
 │   │   ├── RentalDataForm.jsx
 │   │   ├── FinancingForm.jsx
+│   │   ├── DualModeInput.jsx
 │   │   ├── ResultsDisplay.jsx
 │   │   └── InvestmentRating.jsx
-│   ├── Navigation.jsx   # Hauptnavigation
-│   ├── Dashboard.jsx    # Dashboard-Übersicht
+│   ├── Navigation.jsx       # Hauptnavigation
+│   ├── Dashboard.jsx        # Dashboard-Übersicht
+│   ├── NebenkostenPresets.jsx # Vorlagen für Kaufnebenkosten
 │   ├── InvestmentPage.jsx # Seite Investition
 │   ├── RentPage.jsx       # Seite Miete
 │   ├── FinancingPage.jsx  # Seite Finanzierung
