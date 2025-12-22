@@ -173,6 +173,13 @@ export function calculateDerivedValues(state) {
 
   const monatlicheCashflow = monatlicheMiete - monatlicheKosten
 
+  // Pro qm Berechnungen
+  const wohnflaeche = parseFloat(state.wohnflaeche) || 0
+  const mieteProQm = wohnflaeche > 0 ? nettokaltmiete / wohnflaeche : 0
+  const hausgeldProQm = wohnflaeche > 0 ? hausgeld / wohnflaeche : 0
+  const nichtUmlagefaehigProQm = wohnflaeche > 0 ? nichtUmlagefaehig / wohnflaeche : 0
+  const umlagefaehigProQm = wohnflaeche > 0 ? umlagefaehig / wohnflaeche : 0
+
   // Finanzierung (Multi-Loan)
   let loans = []
   if (Array.isArray(state.finanzierung)) {
@@ -238,9 +245,14 @@ export function calculateDerivedValues(state) {
     kaufpreisProQm,
     bruttomietrendite,
     nettomietrendite,
+    monatlicheMiete,
     monatlicheCashflow,
     hausgeld,
     hausgeldQuote,
+    mieteProQm,
+    hausgeldProQm,
+    nichtUmlagefaehigProQm,
+    umlagefaehigProQm,
     berechneteNebenkosten: actualNebenkosten
   }
 }

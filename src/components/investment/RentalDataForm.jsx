@@ -9,6 +9,7 @@ const RentalDataForm = ({
     nichtUmlagefaehigeKosten,
     hausgeld,
     hausgeldQuote,
+    monatlicheMiete,
     onNettokaltmieteChange,
     onStellplatzmieteChange,
     onUmlagefaehigeKostenChange,
@@ -38,6 +39,16 @@ const RentalDataForm = ({
                             validator={validateCosts}
                             placeholder="z.B. 50"
                         />
+
+                        {/* Display Calculated Total Rent */}
+                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-blue-800">Gesamtmiete pro Monat:</span>
+                                <span className="font-bold text-blue-900">
+                                    {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(monatlicheMiete || 0)}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -61,16 +72,12 @@ const RentalDataForm = ({
                         />
 
                         {/* Display Calculated Hausgeld */}
-                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm text-gray-600">Berechnetes Hausgeld:</span>
-                                <span className="font-semibold text-gray-900">
+                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-blue-800">Berechnetes Hausgeld:</span>
+                                <span className="font-bold text-blue-900">
                                     {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(hausgeld || 0)}
                                 </span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs text-gray-500">
-                                <span>davon umlagefähig:</span>
-                                <span>{(hausgeldQuote || 0).toFixed(1)}%</span>
                             </div>
                         </div>
                     </div>

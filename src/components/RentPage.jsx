@@ -28,6 +28,11 @@ const RentPage = () => {
                         nichtUmlagefaehigeKosten={state.nichtUmlagefaehigeKosten}
                         hausgeld={state.hausgeld}
                         hausgeldQuote={state.hausgeldQuote}
+                        monatlicheMiete={state.monatlicheMiete}
+                        mieteProQm={state.mieteProQm}
+                        hausgeldProQm={state.hausgeldProQm}
+                        umlagefaehigProQm={state.umlagefaehigProQm}
+                        nichtUmlagefaehigProQm={state.nichtUmlagefaehigProQm}
                         onNettokaltmieteChange={(val) => updateField('nettokaltmiete', val)}
                         onStellplatzmieteChange={(val) => updateField('stellplatzmiete', val)}
                         onUmlagefaehigeKostenChange={(val) => updateField('umlagefaehigeKosten', val)}
@@ -37,11 +42,17 @@ const RentPage = () => {
 
                 {/* Results */}
                 <div className="space-y-6">
-                    <ResultsDisplay state={state} />
+                    <ResultsDisplay
+                        state={state}
+                        showRentDetails={true}
+                    />
 
                     <InvestmentRating
                         bruttomietrendite={state.bruttomietrendite}
                         monatlicheCashflow={state.monatlicheCashflow}
+                        hausgeldQuote={state.hausgeldQuote}
+                        showCostDistribution={true}
+                        hideGeneralRatings={true}
                     />
                 </div>
             </div>

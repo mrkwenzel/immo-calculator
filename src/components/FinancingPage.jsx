@@ -30,7 +30,11 @@ const FinancingPage = () => {
 
                 {/* Results */}
                 <div className="space-y-6">
-                    <ResultsDisplay state={state} />
+                    <ResultsDisplay
+                        state={state}
+                        showFinancing={true}
+                        showCashflow={true}
+                    />
 
                     <InvestmentRating
                         bruttomietrendite={state.bruttomietrendite}
