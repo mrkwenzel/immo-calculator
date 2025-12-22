@@ -56,7 +56,7 @@ const InvestmentPage = () => {
 
                     <InvestmentRating
                         bruttomietrendite={state.bruttomietrendite}
-                        monatlicheCashflow={state.monatlicheCashflow}
+                        monatlicheCashflow={state.cashflowNachBank}
                     />
                 </div>
             </div>

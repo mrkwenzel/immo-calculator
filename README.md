@@ -26,21 +26,24 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - **Mietdaten & Hausgeld**:
   - Trennung in umlagefähige und nicht-umlagefähige Kosten
   - Berücksichtigung von Stellplatzmiete
+  - **Detaillierte Kennzahlen pro m²** (Miete, Hausgeld, etc.)
+  - **Berechnung der Gesamtmiete** (Kaltmiete + Stellplatz)
 - Automatische Berechnung von:
   - Gesamtinvestition
   - Kaufpreis pro m²
   - Brutto- und Nettomietrendite
-- Bewertung der Investition mit Ampelsystem
+- Bewertung der Investition mit Ampelsystem und **Hausgeld-Verteilung**
 
 ### 💳 Finanzierung (NEU)
 
 - Unterstützung für bis zu **3 separate Darlehen**
 - Einstellung von Zinssatz und Tilgung pro Darlehen
+- **Cashflow-Toggle**: Jedes Darlehen kann optional für die Cashflow-Rechnung aktiviert/deaktiviert werden
 - Automatische Berechnung von:
-  - Monatlicher Kapitaldienst (Zins + Tilgung)
+  - **Bankrate (gesamt)**: Summe aller Raten
   - Darlehenssumme gesamt
-  - Cashflow nach Bank (Netto-Netto)
-  - **Eigenkapital-Rendite (EK-Rendite)**
+  - Cashflow nach Bank (Netto-Netto unter Berücksichtigung der gewählten Darlehen)
+  - **Eigenkapital-Rendite (EK-Rendite)** mit Hebel-Bewertung
 
 ### 💰 Cashflow-Analyse
 
@@ -132,7 +135,7 @@ Die Webapp berechnet automatisch:
 - **Gesamtinvestition** = Kaufpreis + Nebenkosten
 - **Hausgeld** = Umlagefähig + Nicht-umlagefähig
 - **Operativer Cashflow** = Gesamtmiete - nicht-umlagefähige Kosten
-- **Cashflow nach Bank** = Operativer Cashflow - Kapitaldienst
+- **Cashflow nach Bank** = Operativer Cashflow - Bankrate (der gewählten Darlehen)
 - **Bruttomietrendite** = (Jahresmiete / Gesamtinvestition) × 100
 - **Eigenkapital-Rendite** = ((Monatlicher Cashflow nach Bank × 12) / Eigenkapital) × 100
 

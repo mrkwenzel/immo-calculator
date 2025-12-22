@@ -84,7 +84,7 @@ const ResultsDisplay = ({
                                 {formatCurrency(state.monatlicheCashflow)}
                             </span>
                         </div>
-                        <div className="text-xs text-gray-500 text-right">Miete - nicht-uml. Kosten</div>
+                        <div className="text-xs text-gray-500 text-right">Miete - nicht-uml. Hausgeld</div>
                     </div>
                 )}
 
@@ -98,9 +98,16 @@ const ResultsDisplay = ({
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center text-sm">
-                                <span className="text-blue-700">Gesamt-Kapitaldienst:</span>
+                                <span className="text-blue-700 font-medium">Bankrate (gesamt):</span>
                                 <span className="text-blue-900 font-semibold">{formatCurrency(state.monatlicherKapitaldienst)}</span>
                             </div>
+
+                            {state.monatlicherKapitaldienst !== state.kapitaldienstRelevantForCashflow && (
+                                <div className="flex justify-between items-center text-xs text-blue-600 pl-4 italic">
+                                    <span>Davon cashflow-relevant:</span>
+                                    <span>{formatCurrency(state.kapitaldienstRelevantForCashflow)}</span>
+                                </div>
+                            )}
 
                             {/* Breakdown of individual loans if more than one has a rate > 0 */}
                             {state.berechneteFinanzierung && state.berechneteFinanzierung.filter(f => f.rate > 0).length > 1 && (
@@ -108,7 +115,9 @@ const ResultsDisplay = ({
                                     {state.berechneteFinanzierung.map((loan, idx) => loan.rate > 0 ? (
                                         <div key={idx} className="flex justify-between items-center text-xs text-blue-600">
                                             <span>Darlehen {idx + 1}:</span>
-                                            <span>{formatCurrency(loan.rate)}</span>
+                                            <span className={loan.includeInCashflow ? "font-medium" : "line-through opacity-50"}>
+                                                {formatCurrency(loan.rate)}
+                                            </span>
                                         </div>
                                     ) : null)}
                                 </div>

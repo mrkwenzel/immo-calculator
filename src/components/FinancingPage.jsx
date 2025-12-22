@@ -33,7 +33,7 @@ const FinancingPage = () => {
                     <ResultsDisplay
                         state={state}
                         showFinancing={true}
-                        showCashflow={false}
+                        showCashflow={true}
                     />
 
                     <InvestmentRating

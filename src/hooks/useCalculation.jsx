@@ -8,7 +8,8 @@ const defaultLoan = {
   darlehensbetrag: 0,
   modus: 'prozent', // 'absolut' oder 'prozent'
   zinssatz: 3.5,
-  tilgung: 2.0
+  tilgung: 2.0,
+  includeInCashflow: true
 }
 
 const defaultState = {
@@ -171,7 +172,7 @@ export function calculateDerivedValues(state) {
   const nettoJahresmiete = jahresmiete - jahreskosten
   const nettomietrendite = gesamtinvestition > 0 ? (nettoJahresmiete / gesamtinvestition) * 100 : 0
 
-  const monatlicheCashflow = monatlicheMiete - monatlicheKosten
+  const cashflowVorFinanzierung = monatlicheMiete - monatlicheKosten
 
   // Pro qm Berechnungen
   const wohnflaeche = parseFloat(state.wohnflaeche) || 0
@@ -197,6 +198,7 @@ export function calculateDerivedValues(state) {
 
   let gesamtDarlehen = 0
   let monatlicherKapitaldienst = 0
+  let kapitaldienstRelevantForCashflow = 0
   const berechneteFinanzierung = []
 
   loans.forEach(loan => {
@@ -218,15 +220,21 @@ export function calculateDerivedValues(state) {
     gesamtDarlehen += loanAmount
     monatlicherKapitaldienst += mtlRate
 
+    if (loan.includeInCashflow !== false) {
+      kapitaldienstRelevantForCashflow += mtlRate
+    }
+
     berechneteFinanzierung.push({
       betrag: loanAmount,
       rate: mtlRate,
       zins: zinssatz,
-      tilgung: tilgung
+      tilgung: tilgung,
+      includeInCashflow: loan.includeInCashflow !== false
     })
   })
 
-  const cashflowNachBank = monatlicheCashflow - monatlicherKapitaldienst
+  const monatlicheCashflow = cashflowVorFinanzierung
+  const cashflowNachBank = monatlicheCashflow - kapitaldienstRelevantForCashflow
 
   const eigenkapital = gesamtinvestition - gesamtDarlehen
   const eigenkapitalRendite = eigenkapital > 0 ? ((cashflowNachBank * 12) / eigenkapital) * 100 : 0
@@ -238,6 +246,7 @@ export function calculateDerivedValues(state) {
     berechnetesDarlehen: gesamtDarlehen, // For backward compatibility hook (renamed conceptually but kept key?) Actually used 'berechnetesDarlehen' in Charts/Forms. I'll map total to it.
     gesamtDarlehen,
     monatlicherKapitaldienst,
+    kapitaldienstRelevantForCashflow,
     cashflowNachBank,
     eigenkapital,
     eigenkapitalRendite,
