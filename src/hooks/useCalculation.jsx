@@ -251,6 +251,7 @@ export function calculateDerivedValues(state) {
     eigenkapital,
     eigenkapitalRendite,
     gesamtinvestition,
+    gesamtnebenkosten,
     kaufpreisProQm,
     bruttomietrendite,
     nettomietrendite,

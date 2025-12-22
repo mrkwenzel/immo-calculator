@@ -19,7 +19,8 @@ const CashflowAnalysis = () => {
     const projection = []
     let currentMiete = (parseFloat(state.nettokaltmiete) || 0) + (parseFloat(state.stellplatzmiete) || 0)
     let currentKosten = parseFloat(state.nichtUmlagefaehigeKosten) || 0
-    const mtlKapitaldienst = parseFloat(state.monatlicherKapitaldienst) || 0
+    const mtlBankrateGesamt = parseFloat(state.monatlicherKapitaldienst) || 0
+    const mtlBankrateRelevant = parseFloat(state.kapitaldienstRelevantForCashflow) || 0
 
     for (let year = 1; year <= years; year++) {
       if (year > 1) {
@@ -29,8 +30,11 @@ const CashflowAnalysis = () => {
 
       const jahresmiete = currentMiete * 12
       const jahreskosten = currentKosten * 12
-      const jahresKapitaldienst = mtlKapitaldienst * 12
-      const nettoCashflow = jahresmiete - jahreskosten - jahresKapitaldienst
+      const jahresOperativerCashflow = jahresmiete - jahreskosten
+      const jahresBankrateGesamt = mtlBankrateGesamt * 12
+      const jahresBankrateRelevant = mtlBankrateRelevant * 12
+
+      const nettoCashflow = jahresOperativerCashflow - jahresBankrateRelevant
       const kumuliert = projection.length > 0
         ? projection[projection.length - 1].kumuliert + nettoCashflow
         : nettoCashflow
@@ -39,6 +43,8 @@ const CashflowAnalysis = () => {
         year,
         jahresmiete,
         jahreskosten,
+        jahresOperativerCashflow,
+        jahresBankrateGesamt,
         nettoCashflow,
         kumuliert,
         monatlicheMiete: currentMiete,
@@ -176,22 +182,22 @@ const CashflowAnalysis = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jahr
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Monatliche Miete
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Monatl. Miete
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Jahresmiete
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Operat. CF (J)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Jahreskosten
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Bankrate (J)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Netto-Cashflow
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Netto-CF (J)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Kumuliert
                 </th>
               </tr>
@@ -199,23 +205,23 @@ const CashflowAnalysis = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {projection.map((row) => (
                 <tr key={row.year} className={row.year % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {row.year}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatCurrency(row.monatlicheMiete)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatCurrency(row.jahresmiete)}
+                  <td className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${row.jahresOperativerCashflow >= 0 ? 'text-green-600' : 'text-orange-500'}`}>
+                    {formatCurrency(row.jahresOperativerCashflow)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatCurrency(row.jahreskosten)}
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-blue-600">
+                    {formatCurrency(row.jahresBankrateGesamt)}
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.nettoCashflow >= 0 ? 'text-green-600' : 'text-red-600'
+                  <td className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${row.nettoCashflow >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
                     {formatCurrency(row.nettoCashflow)}
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.kumuliert >= 0 ? 'text-green-600' : 'text-red-600'
+                  <td className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${row.kumuliert >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
                     {formatCurrency(row.kumuliert)}
                   </td>

@@ -55,10 +55,24 @@ const ResultsDisplay = ({
                 {/* Investment Basics */}
                 {showInvestmentBasics && (
                     <div className="space-y-3">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-gray-600">Gesamtinvestition:</span>
-                                <span className="font-bold text-gray-900">{formatCurrency(state.gesamtinvestition)}</span>
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-600 font-medium">Gesamtinvestition:</span>
+                                <span className="font-bold text-gray-900 text-lg">{formatCurrency(state.gesamtinvestition)}</span>
+                            </div>
+                            <div className="space-y-1.5 border-t border-gray-200 pt-2">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 italic">Kaufpreis:</span>
+                                    <span className="text-gray-700">{formatCurrency(state.kaufpreis)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs text-gray-400 pl-4 border-l-2 border-gray-200 ml-2">
+                                    <span>Kaufpreis / m²:</span>
+                                    <span>{state.kaufpreisProQm.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 italic">Nebenkosten:</span>
+                                    <span className="text-gray-700">{formatCurrency(state.gesamtnebenkosten)}</span>
+                                </div>
                             </div>
                         </div>
 
