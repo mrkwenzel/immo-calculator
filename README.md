@@ -23,28 +23,43 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 
 - Eingabe von Kaufpreis und Wohnfläche
 - Detaillierte Kaufnebenkosten (Makler, Notar, Grunderwerbssteuer, Sonstige)
-- Mietdaten und Bewirtschaftungskosten
+- **Mietdaten & Hausgeld**:
+  - Trennung in umlagefähige und nicht-umlagefähige Kosten
+  - Berücksichtigung von Stellplatzmiete
+  - **Detaillierte Kennzahlen pro m²** (Miete, Hausgeld, etc.)
+  - **Berechnung der Gesamtmiete** (Kaltmiete + Stellplatz)
 - Automatische Berechnung von:
   - Gesamtinvestition
   - Kaufpreis pro m²
   - Brutto- und Nettomietrendite
-  - Monatlicher Cashflow
-- Bewertung der Investition mit Ampelsystem
+- Bewertung der Investition mit Ampelsystem und **Hausgeld-Verteilung**
+
+### 💳 Finanzierung (NEU)
+
+- Unterstützung für bis zu **3 separate Darlehen**
+- Einstellung von Zinssatz und Tilgung pro Darlehen
+- **Cashflow-Toggle**: Jedes Darlehen kann optional für die Cashflow-Rechnung aktiviert/deaktiviert werden
+- Automatische Berechnung von:
+  - **Bankrate (gesamt)**: Summe aller Raten
+  - Darlehenssumme gesamt
+  - Cashflow nach Bank (Netto-Netto unter Berücksichtigung der gewählten Darlehen)
+  - **Eigenkapital-Rendite (EK-Rendite)** mit Hebel-Bewertung
 
 ### 💰 Cashflow-Analyse
 
 - Langfristige Cashflow-Projektion (1-30 Jahre)
 - Berücksichtigung von Miet- und Kostensteigerungen
-- Break-Even Analyse
+- **Integration der Finanzierung** in die Projektion
+- Break-Even Analyse (Amortisation nach Bank)
 - ROI-Berechnung
 - Detaillierte Jahrestabelle
 
 ### 📈 Diagramme & Visualisierungen
 
-- Jährliche Cashflow-Entwicklung (Balkendiagramm)
-- Kumulierter Cashflow über Zeit (Liniendiagramm)
+- Jährliche Cashflow-Entwicklung (Stacked: Miete vs. Operativ vs. Bank)
+- Kumulierter Cashflow über Zeit (nach Bankrate)
 - Investitionskosten-Verteilung (Kreisdiagramm)
-- Rendite-Vergleich mit Benchmarks
+- Rendite-Vergleich (Brutto vs. Netto vs. EK-Rendite)
 - Kennzahlen-Übersicht
 
 ## Technische Details
@@ -53,7 +68,7 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 
 - **React 18** - Moderne UI-Bibliothek
 - **Vite** - Schneller Build-Tool
-- **Tailwind CSS** - Utility-first CSS Framework
+- **Tailwind CSS** - Utility-first CSS Framework (Custom Design System)
 - **Recharts** - Responsive Diagramm-Bibliothek
 - **React Router** - Client-side Routing
 - **Lucide React** - Moderne Icon-Bibliothek
@@ -65,19 +80,11 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - **Desktop-optimiert** - Vollständige Funktionalität auf großen Bildschirmen
 - **Touch-freundlich** - Große Buttons und einfache Navigation
 
-### Features für Mobile
-
-- Hamburger-Menü für Navigation
-- Optimierte Eingabefelder
-- Scrollbare Tabellen
-- Responsive Diagramme
-- Touch-optimierte Bedienung
-
 ### ✅ Tests & Qualitätssicherung
 
 - **Vitest** - Schnelles Testing-Framework
 - **React Testing Library** - Component Testing
-- **Automatische Tests** im Docker-Build-Prozess
+- **Automatische Tests** im Docker-Build-Prozess (fail-on-error)
 
 ## Installation & Start (lokal)
 
@@ -111,65 +118,47 @@ docker run -p 8080:80 immo-calculator
 
 ## App aufrufen
 
-Die Webapp läuft standardmäßig auf `http://localhost:3000`
+Die Webapp läuft standardmäßig auf `http://localhost:8080` (Docker) oder Port 5173 (lokal)
 
 ## Verwendung
 
-1. **Dashboard**: Überblick über alle Kennzahlen
-2. **Investition**: Eingabe der Immobiliendaten
-3. **Cashflow**: Langfristige Analyse und Projektion
-4. **Diagramme**: Visualisierung der Daten
-
-### Eingabefelder
-
-**Grunddaten:**
-
-- Kaufpreis in Euro
-- Wohnfläche in m²
-
-**Kaufnebenkosten:**
-
-- Maklergebühren
-- Notarkosten
-- Grunderwerbssteuer
-- Sonstige Kosten
-
-**Mietdaten:**
-
-- Nettokaltmiete pro Monat
-- Bewirtschaftungskosten pro Monat
+1. **Investition**: Eingabe der Grunddaten und Kaufnebenkosten
+2. **Miete**: Verwaltung der Einnahmen und Hausgeld-Struktur
+3. **Finanzierung**: Konfiguration der Bankdarlehen
+4. **Cashflow**: Langfristige Analyse der Rentabilität
+5. **Diagramme**: Grafische Auswertung der Ergebnisse
 
 ### Berechnungen
 
 Die Webapp berechnet automatisch:
 
 - **Gesamtinvestition** = Kaufpreis + Nebenkosten
-- **Kaufpreis pro m²** = Kaufpreis / Wohnfläche
+- **Hausgeld** = Umlagefähig + Nicht-umlagefähig
+- **Operativer Cashflow** = Gesamtmiete - nicht-umlagefähiges Hausgeld
+- **Cashflow nach Bank** = Operativer Cashflow - Bankrate (der gewählten Darlehen)
 - **Bruttomietrendite** = (Jahresmiete / Gesamtinvestition) × 100
-- **Nettomietrendite** = ((Jahresmiete - Jahreskosten) / Gesamtinvestition) × 100
-- **Monatlicher Cashflow** = Nettokaltmiete - Bewirtschaftungskosten
-
-## Browser-Kompatibilität
-
-- Chrome/Edge 88+
-- Firefox 85+
-- Safari 14+
-- Mobile Browser (iOS Safari, Chrome Mobile)
+- **Eigenkapital-Rendite** = ((Monatlicher Cashflow nach Bank × 12) / Eigenkapital) × 100
 
 ## Projektstruktur
 
+```
 src/
 ├── components/          # React Komponenten
-│   ├── investment/      # Investitionsrechner-Komponenten
+│   ├── investment/      # Formulare & Anzeigen
 │   │   ├── BasicDataForm.jsx
 │   │   ├── AncillaryCostsForm.jsx
 │   │   ├── RentalDataForm.jsx
+│   │   ├── FinancingForm.jsx
+│   │   ├── DualModeInput.jsx
 │   │   ├── ResultsDisplay.jsx
 │   │   └── InvestmentRating.jsx
-│   ├── Navigation.jsx   # Hauptnavigation
-│   ├── Dashboard.jsx    # Dashboard-Übersicht
-│   ├── InvestmentCalculator.jsx  # Hauptkomponente Investition
-│   ├── CashflowAnalysis.jsx      # Cashflow-Analyse
+│   ├── Navigation.jsx       # Hauptnavigation
+│   ├── Dashboard.jsx        # Dashboard-Übersicht
+│   ├── NebenkostenPresets.jsx # Vorlagen für Kaufnebenkosten
+│   ├── InvestmentPage.jsx # Seite Investition
+│   ├── RentPage.jsx       # Seite Miete
+│   ├── FinancingPage.jsx  # Seite Finanzierung
+│   ├── CashflowAnalysis.jsx # Cashflow-Analyse
 │   ├── Charts.jsx       # Diagramme
 │   └── InputField.jsx   # Wiederverwendbare Eingabekomponente
 ├── hooks/
@@ -177,9 +166,9 @@ src/
 │   └── useLocalStorage.jsx # Daten-Persistenz
 ├── utils/
 │   └── validation.js    # Validierungslogik
-├── App.jsx             # Hauptkomponente
+├── App.jsx             # Routing & Providers
 ├── main.jsx           # Entry Point
-└── index.css          # Globale Styles
+└── index.css          # Styles
 ```
 
 ## Weitere mögliche Anpassungen

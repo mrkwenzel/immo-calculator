@@ -5,46 +5,22 @@ const NebenkostenPresets = () => {
   const { updateNebenkostenProzent, updateNebenkostenModus } = useCalculation()
 
   const presets = [
-    {
-      name: 'Bayern Standard',
-      description: 'Typische Nebenkosten in Bayern',
-      values: {
-        makler: 3.57,
-        notar: 1.5,
-        grunderwerbssteuer: 3.5,
-        sonstige: 0.5
-      }
-    },
-    {
-      name: 'Berlin/Brandenburg',
-      description: 'Typische Nebenkosten in Berlin/Brandenburg',
-      values: {
-        makler: 7.14,
-        notar: 1.5,
-        grunderwerbssteuer: 6.0,
-        sonstige: 0.5
-      }
-    },
-    {
-      name: 'NRW Standard',
-      description: 'Typische Nebenkosten in Nordrhein-Westfalen',
-      values: {
-        makler: 7.14,
-        notar: 1.5,
-        grunderwerbssteuer: 6.5,
-        sonstige: 0.5
-      }
-    },
-    {
-      name: 'Niedersachsen',
-      description: 'Typische Nebenkosten in Niedersachsen',
-      values: {
-        makler: 6.0,
-        notar: 1.5,
-        grunderwerbssteuer: 5.0,
-        sonstige: 0.5
-      }
-    }
+    { name: 'Baden-Württemberg', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } },
+    { name: 'Bayern', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 3.5, sonstige: 0.5 } },
+    { name: 'Berlin', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.0, sonstige: 0.5 } },
+    { name: 'Brandenburg', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.5, sonstige: 0.5 } },
+    { name: 'Bremen', values: { makler: 2.98, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } },
+    { name: 'Hamburg', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.5, sonstige: 0.5 } },
+    { name: 'Hessen', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.0, sonstige: 0.5 } },
+    { name: 'Meckl.-Vorpommern', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.0, sonstige: 0.5 } },
+    { name: 'Niedersachsen', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } },
+    { name: 'NRW', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.5, sonstige: 0.5 } },
+    { name: 'Rheinland-Pfalz', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } },
+    { name: 'Saarland', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.5, sonstige: 0.5 } },
+    { name: 'Sachsen', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.5, sonstige: 0.5 } },
+    { name: 'Sachsen-Anhalt', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } },
+    { name: 'Schleswig-Holstein', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 6.5, sonstige: 0.5 } },
+    { name: 'Thüringen', values: { makler: 3.57, notar: 1.5, grunderwerbssteuer: 5.0, sonstige: 0.5 } }
   ]
 
   const applyPreset = (preset) => {
@@ -63,15 +39,14 @@ const NebenkostenPresets = () => {
       <p className="text-sm text-gray-600 mb-4">
         Schnell typische Nebenkosten für verschiedene Bundesländer anwenden:
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {presets.map((preset, index) => (
           <button
             key={index}
             onClick={() => applyPreset(preset)}
             className="text-left p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200"
           >
-            <div className="font-medium text-gray-900">{preset.name}</div>
-            <div className="text-sm text-gray-600 mt-1">{preset.description}</div>
+            <div className="font-medium text-gray-900 text-sm">{preset.name}</div>
             <div className="text-xs text-gray-500 mt-2">
               Gesamt: {Object.values(preset.values).reduce((sum, val) => sum + val, 0).toFixed(1)}%
             </div>

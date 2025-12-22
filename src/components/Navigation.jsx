@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Home, Calculator, TrendingUp, BarChart3 } from 'lucide-react'
+import { Menu, X, Home, Calculator, TrendingUp, BarChart3, Coins, Wallet } from 'lucide-react'
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -9,6 +9,8 @@ const Navigation = () => {
   const navItems = [
     { path: '/', label: 'Dashboard', icon: Home },
     { path: '/investment', label: 'Investition', icon: Calculator },
+    { path: '/rent', label: 'Miete', icon: Coins },
+    { path: '/financing', label: 'Finanzierung', icon: Wallet },
     { path: '/cashflow', label: 'Cashflow', icon: TrendingUp },
     { path: '/charts', label: 'Diagramme', icon: BarChart3 }
   ]
@@ -29,11 +31,10 @@ const Navigation = () => {
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${
-                  location.pathname === path
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${location.pathname === path
                     ? 'bg-primary-100 text-primary-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 <Icon size={18} />
                 <span>{label}</span>
@@ -61,11 +62,10 @@ const Navigation = () => {
                   key={path}
                   to={path}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${
-                    location.pathname === path
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${location.pathname === path
                       ? 'bg-primary-100 text-primary-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <Icon size={18} />
                   <span>{label}</span>

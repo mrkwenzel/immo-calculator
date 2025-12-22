@@ -1,6 +1,13 @@
 import React from 'react'
+import { Landmark, TrendingUp } from 'lucide-react'
 
-const ResultsDisplay = ({ state }) => {
+const ResultsDisplay = ({
+    state,
+    showRentDetails = false,
+    showInvestmentBasics = false,
+    showCashflow = false,
+    showFinancing = false
+}) => {
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('de-DE', {
             style: 'currency',
@@ -8,69 +15,137 @@ const ResultsDisplay = ({ state }) => {
         }).format(value || 0)
     }
 
+    const formatPercent = (value) => (value || 0).toFixed(2)
+
     return (
         <div className="card">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Berechnungsergebnisse
+                Ergebnisse
             </h3>
             <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Gesamtinvestition:</span>
-                        <span className="text-xl font-bold text-primary-600">
-                            {formatCurrency(state.gesamtinvestition)}
-                        </span>
+                {/* Rent per SQM details (only for Rent page) */}
+                {showRentDetails && (
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                            Miet- & Kostenkennzahlen (/m²)
+                        </h4>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-blue-700 font-medium">Kaltmiete / m²:</span>
+                                <span className="text-blue-900 font-bold">{state.mieteProQm.toFixed(2).replace('.', ',')} €</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-blue-700">Hausgeld / m²:</span>
+                                <span className="text-blue-900">{state.hausgeldProQm.toFixed(2).replace('.', ',')} €</span>
+                            </div>
+                            <div className="pl-4 space-y-1">
+                                <div className="flex justify-between items-center text-xs text-blue-600">
+                                    <span>davon umlagefähig:</span>
+                                    <span>{state.umlagefaehigProQm.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs text-blue-600">
+                                    <span>nicht umlagefähig:</span>
+                                    <span>{state.nichtUmlagefaehigProQm.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                        Kaufpreis + Nebenkosten
-                    </div>
-                </div>
+                )}
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Kaufpreis pro m²:</span>
-                        <span className="text-xl font-bold text-green-600">
-                            {formatCurrency(state.kaufpreisProQm)}
-                        </span>
-                    </div>
-                </div>
+                {/* Investment Basics */}
+                {showInvestmentBasics && (
+                    <div className="space-y-3">
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-600 font-medium">Gesamtinvestition:</span>
+                                <span className="font-bold text-gray-900 text-lg">{formatCurrency(state.gesamtinvestition)}</span>
+                            </div>
+                            <div className="space-y-1.5 border-t border-gray-200 pt-2">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 italic">Kaufpreis:</span>
+                                    <span className="text-gray-700">{formatCurrency(state.kaufpreis)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs text-gray-400 pl-4 border-l-2 border-gray-200 ml-2">
+                                    <span>Kaufpreis / m²:</span>
+                                    <span>{state.kaufpreisProQm.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 italic">Nebenkosten:</span>
+                                    <span className="text-gray-700">{formatCurrency(state.gesamtnebenkosten)}</span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Bruttomietrendite:</span>
-                        <span className="text-xl font-bold text-blue-600">
-                            {(state.bruttomietrendite || 0).toFixed(2)}%
-                        </span>
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="flex justify-between items-center mb-1">
+                                <span className="text-gray-600">Bruttomietrendite:</span>
+                                <span className="font-bold text-blue-600">{formatPercent(state.bruttomietrendite)}%</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm text-gray-500">
+                                <span>Nettomietrendite:</span>
+                                <span>{formatPercent(state.nettomietrendite)}%</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                        Jahresmiete / Gesamtinvestition
-                    </div>
-                </div>
+                )}
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Nettomietrendite:</span>
-                        <span className="text-xl font-bold text-purple-600">
-                            {(state.nettomietrendite || 0).toFixed(2)}%
-                        </span>
+                {/* Operating Cashflow */}
+                {showCashflow && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-gray-600">Operativer Cashflow:</span>
+                            <span className={`font-bold ${state.monatlicheCashflow >= 0 ? 'text-green-600' : 'text-orange-500'}`}>
+                                {formatCurrency(state.monatlicheCashflow)}
+                            </span>
+                        </div>
+                        <div className="text-xs text-gray-500 text-right">Miete - nicht-uml. Hausgeld</div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                        Nach Bewirtschaftungskosten
-                    </div>
-                </div>
+                )}
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-600">Monatlicher Cashflow:</span>
-                        <span className={`text-xl font-bold ${state.monatlicheCashflow >= 0 ? 'text-green-600' : 'text-red-600'
-                            }`}>
-                            {formatCurrency(state.monatlicheCashflow)}
-                        </span>
+                {/* Financing Impact */}
+                {showFinancing && (
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <div className="flex items-center gap-2 mb-3 text-blue-900 font-semibold border-b border-blue-200 pb-2">
+                            <Landmark className="w-4 h-4" />
+                            <span>Finanzierung</span>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-blue-700 font-medium">Bankrate (gesamt):</span>
+                                <span className="text-blue-900 font-semibold">{formatCurrency(state.monatlicherKapitaldienst)}</span>
+                            </div>
+
+                            {state.monatlicherKapitaldienst !== state.kapitaldienstRelevantForCashflow && (
+                                <div className="flex justify-between items-center text-xs text-blue-600 pl-4 italic">
+                                    <span>Davon cashflow-relevant:</span>
+                                    <span>{formatCurrency(state.kapitaldienstRelevantForCashflow)}</span>
+                                </div>
+                            )}
+
+                            {/* Breakdown of individual loans if more than one has a rate > 0 */}
+                            {state.berechneteFinanzierung && state.berechneteFinanzierung.filter(f => f.rate > 0).length > 1 && (
+                                <div className="pl-4 space-y-1 mt-1 border-l-2 border-blue-200">
+                                    {state.berechneteFinanzierung.map((loan, idx) => loan.rate > 0 ? (
+                                        <div key={idx} className="flex justify-between items-center text-xs text-blue-600">
+                                            <span>Darlehen {idx + 1}:</span>
+                                            <span className={loan.includeInCashflow ? "font-medium" : "line-through opacity-50"}>
+                                                {formatCurrency(loan.rate)}
+                                            </span>
+                                        </div>
+                                    ) : null)}
+                                </div>
+                            )}
+
+                            <div className="flex justify-between items-center mt-3 pt-2 border-t border-blue-200">
+                                <span className="text-blue-800 font-medium">Cashflow (n. Bank):</span>
+                                <span className={`font-bold text-lg ${state.cashflowNachBank >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {formatCurrency(state.cashflowNachBank)}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                        Miete - Bewirtschaftungskosten
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     )

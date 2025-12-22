@@ -18,25 +18,29 @@ const Charts = () => {
   // Cashflow-Daten für Diagramme
   const calculateChartData = () => {
     const data = []
-    let currentMiete = state.nettokaltmiete
-    let currentKosten = state.bewirtschaftungskosten
+    let currentMiete = (parseFloat(state.nettokaltmiete) || 0) + (parseFloat(state.stellplatzmiete) || 0)
+    let currentOperativ = parseFloat(state.nichtUmlagefaehigeKosten) || 0
+    const jahresKapitaldienst = (state.monatlicherKapitaldienst || 0) * 12
     let kumuliert = 0
 
     for (let year = 1; year <= years; year++) {
       if (year > 1) {
         currentMiete *= (1 + mietSteigerung / 100)
-        currentKosten *= (1 + kostenSteigerung / 100)
+        currentOperativ *= (1 + kostenSteigerung / 100)
       }
 
       const jahresmiete = currentMiete * 12
-      const jahreskosten = currentKosten * 12
-      const nettoCashflow = jahresmiete - jahreskosten
+      const jahresOperativ = currentOperativ * 12
+      // Cashflow = Miete - Operativ - Bank
+      const nettoCashflow = jahresmiete - jahresOperativ - jahresKapitaldienst
       kumuliert += nettoCashflow
 
       data.push({
         year: `Jahr ${year}`,
         miete: Math.round(jahresmiete),
-        kosten: Math.round(jahreskosten),
+        operativ: Math.round(jahresOperativ),
+        bank: Math.round(jahresKapitaldienst),
+        totalKosten: Math.round(jahresOperativ + jahresKapitaldienst),
         cashflow: Math.round(nettoCashflow),
         kumuliert: Math.round(kumuliert)
       })
@@ -86,7 +90,7 @@ const Charts = () => {
       {/* Cashflow-Entwicklung */}
       <div className="card">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Jährliche Cashflow-Entwicklung
+          Einnahmen vs Kosten (inkl. Finanzierung)
         </h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -96,8 +100,9 @@ const Charts = () => {
               <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="miete" fill="#10b981" name="Jahresmiete" />
-              <Bar dataKey="kosten" fill="#ef4444" name="Jahreskosten" />
+              <Bar dataKey="miete" fill="#10b981" name="Mieteinnahmen" />
+              <Bar dataKey="operativ" stackId="a" fill="#ea580c" name="Bewirtschaftung" />
+              <Bar dataKey="bank" stackId="a" fill="#ef4444" name="Bankrate" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -106,7 +111,7 @@ const Charts = () => {
       {/* Kumulierter Cashflow */}
       <div className="card">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Kumulierter Cashflow über Zeit
+          Kumulierter Cashflow über Zeit (nach Bank)
         </h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -116,20 +121,20 @@ const Charts = () => {
               <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="kumuliert" 
-                stroke="#3b82f6" 
+              <Line
+                type="monotone"
+                dataKey="kumuliert"
+                stroke="#3b82f6"
                 strokeWidth={3}
-                name="Kumulierter Cashflow"
+                name="Kumuliert"
                 dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="cashflow" 
-                stroke="#10b981" 
+              <Line
+                type="monotone"
+                dataKey="cashflow"
+                stroke="#10b981"
                 strokeWidth={2}
-                name="Jährlicher Cashflow"
+                name="Jahres-Cashflow (Netto)"
                 dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
               />
             </LineChart>
@@ -176,14 +181,19 @@ const Charts = () => {
               <BarChart
                 data={[
                   {
-                    name: 'Bruttomietrendite',
+                    name: 'Brutto',
                     wert: state.bruttomietrendite || 0,
-                    benchmark: 5
+                    fill: '#3b82f6'
                   },
                   {
-                    name: 'Nettomietrendite',
+                    name: 'Netto (Op.)',
                     wert: state.nettomietrendite || 0,
-                    benchmark: 3
+                    fill: '#8b5cf6'
+                  },
+                  {
+                    name: 'EK-Rendite',
+                    wert: state.eigenkapitalRendite || 0,
+                    fill: '#10b981'
                   }
                 ]}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -191,45 +201,20 @@ const Charts = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis tickFormatter={(value) => `${value.toFixed(1)}%`} />
-                <Tooltip formatter={(value) => `${value.toFixed(2)}%`} />
-                <Legend />
-                <Bar dataKey="wert" fill="#3b82f6" name="Ihre Rendite" />
-                <Bar dataKey="benchmark" fill="#94a3b8" name="Benchmark" />
+                <Tooltip formatter={(value) => `${value.toFixed(2)}%`} cursor={{ fill: 'transparent' }} />
+                <Bar dataKey="wert" name="Rendite %">
+                  {
+                    [
+                      { fill: '#3b82f6' },
+                      { fill: '#8b5cf6' },
+                      { fill: '#10b981' }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))
+                  }
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Kennzahlen-Übersicht */}
-      <div className="card">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Wichtige Kennzahlen im Überblick
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">
-              {formatCurrency(state.gesamtinvestition)}
-            </div>
-            <div className="text-sm text-gray-600">Gesamtinvestition</div>
-          </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">
-              {(state.bruttomietrendite || 0).toFixed(1)}%
-            </div>
-            <div className="text-sm text-gray-600">Bruttomietrendite</div>
-          </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600">
-              {formatCurrency(state.monatlicheCashflow)}
-            </div>
-            <div className="text-sm text-gray-600">Monatlicher Cashflow</div>
-          </div>
-          <div className="text-center p-4 bg-orange-50 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">
-              {formatCurrency(state.kaufpreisProQm)}
-            </div>
-            <div className="text-sm text-gray-600">Preis pro m²</div>
           </div>
         </div>
       </div>

@@ -21,7 +21,6 @@ ENV CI=true
 RUN npm test -- run
 
 # Baue die App für die Produktion (erstellt den /dist Ordner)
-# Vite ersetzt dabei import.meta.env.VITE_GOOGLE_API_KEY mit dem echten Wert
 RUN npm run build
 
 # --- Stage 2: Serve ---
