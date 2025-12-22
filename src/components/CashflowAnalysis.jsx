@@ -17,8 +17,9 @@ const CashflowAnalysis = () => {
 
   const calculateCashflowProjection = () => {
     const projection = []
-    let currentMiete = state.nettokaltmiete
-    let currentKosten = state.bewirtschaftungskosten
+    let currentMiete = (parseFloat(state.nettokaltmiete) || 0) + (parseFloat(state.stellplatzmiete) || 0)
+    let currentKosten = parseFloat(state.nichtUmlagefaehigeKosten) || 0
+    const mtlKapitaldienst = parseFloat(state.monatlicherKapitaldienst) || 0
 
     for (let year = 1; year <= years; year++) {
       if (year > 1) {
@@ -28,8 +29,9 @@ const CashflowAnalysis = () => {
 
       const jahresmiete = currentMiete * 12
       const jahreskosten = currentKosten * 12
-      const nettoCashflow = jahresmiete - jahreskosten
-      const kumuliert = projection.length > 0 
+      const jahresKapitaldienst = mtlKapitaldienst * 12
+      const nettoCashflow = jahresmiete - jahreskosten - jahresKapitaldienst
+      const kumuliert = projection.length > 0
         ? projection[projection.length - 1].kumuliert + nettoCashflow
         : nettoCashflow
 
@@ -145,8 +147,8 @@ const CashflowAnalysis = () => {
         <div className="card">
           <div className="flex items-center">
             <div className={`${totalCashflow >= 0 ? 'bg-green-500' : 'bg-red-500'} p-3 rounded-lg`}>
-              {totalCashflow >= 0 ? 
-                <TrendingUp className="h-6 w-6 text-white" /> : 
+              {totalCashflow >= 0 ?
+                <TrendingUp className="h-6 w-6 text-white" /> :
                 <TrendingDown className="h-6 w-6 text-white" />
               }
             </div>
@@ -155,7 +157,7 @@ const CashflowAnalysis = () => {
                 ROI nach {years} Jahren
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {state.gesamtinvestition > 0 
+                {state.gesamtinvestition > 0
                   ? ((totalCashflow / state.gesamtinvestition) * 100).toFixed(1) + '%'
                   : '0%'
                 }
@@ -209,14 +211,12 @@ const CashflowAnalysis = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatCurrency(row.jahreskosten)}
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                    row.nettoCashflow >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.nettoCashflow >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
                     {formatCurrency(row.nettoCashflow)}
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                    row.kumuliert >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.kumuliert >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
                     {formatCurrency(row.kumuliert)}
                   </td>
                 </tr>

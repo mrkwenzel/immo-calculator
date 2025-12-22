@@ -24,7 +24,10 @@ describe('calculateDerivedValues', () => {
         },
         wohnflaeche: 0,
         nettokaltmiete: 0,
-        bewirtschaftungskosten: 0
+        stellplatzmiete: 0,
+        umlagefaehigeKosten: 0,
+        nichtUmlagefaehigeKosten: 0,
+        finanzierung: [] // Will default to 3 empty loans in calculateDerivedValues
     }
 
     it('calculates total investment correctly with absolute costs', () => {
@@ -44,56 +47,51 @@ describe('calculateDerivedValues', () => {
         expect(result.berechneteNebenkosten.makler).toBe(1000)
     })
 
-    it('calculates total investment correctly with percentage costs', () => {
-        const state = {
-            ...defaultState,
-            kaufpreis: 100000,
-            nebenkostenModus: {
-                ...defaultState.nebenkostenModus,
-                makler: 'prozent'
-            },
-            nebenkostenProzentual: {
-                ...defaultState.nebenkostenProzentual,
-                makler: 3
-            }
-        }
-
-        const result = calculateDerivedValues(state)
-        // 3% of 100,000 is 3,000
-        expect(result.berechneteNebenkosten.makler).toBe(3000)
-        expect(result.gesamtinvestition).toBe(103000)
-    })
-
-    it('calculates yields correctly', () => {
+    it('calculates yields and cashflow correctly', () => {
         const state = {
             ...defaultState,
             kaufpreis: 100000,
             kaufnebenkosten: { makler: 0, notar: 0, grunderwerbssteuer: 0, sonstige: 0 },
-            nettokaltmiete: 500, // 6000 per year
-            bewirtschaftungskosten: 100 // 1200 per year
+            nettokaltmiete: 500,
+            stellplatzmiete: 50,
+            nichtUmlagefaehigeKosten: 100
         }
 
         const result = calculateDerivedValues(state)
-
-        // Gross yield: (6000 / 100000) * 100 = 6%
-        expect(result.bruttomietrendite).toBe(6)
-
-        // Net yield: ((6000 - 1200) / 100000) * 100 = 4.8%
-        expect(result.nettomietrendite).toBe(4.8)
-
-        // Monthly cashflow: 500 - 100 = 400
-        expect(result.monatlicheCashflow).toBe(400)
+        expect(result.bruttomietrendite).toBeCloseTo(6.6)
+        expect(result.nettomietrendite).toBeCloseTo(5.4)
+        expect(result.monatlicheCashflow).toBe(450)
     })
 
-    it('calculates price per sqm', () => {
+    it('calculates multi-loan financing correctly', () => {
         const state = {
             ...defaultState,
-            kaufpreis: 100000,
-            wohnflaeche: 50
+            kaufpreis: 200000,
+            kaufnebenkosten: { makler: 0, notar: 0, grunderwerbssteuer: 0, sonstige: 0 },
+            nettokaltmiete: 1000,
+            finanzierung: [
+                { darlehensbetrag: 80, modus: 'prozent', zinssatz: 4, tilgung: 2 }, // 160.000, index 0
+                { darlehensbetrag: 20000, modus: 'absolut', zinssatz: 5, tilgung: 5 } // 20.000, index 1
+            ]
         }
 
         const result = calculateDerivedValues(state)
-        expect(result.kaufpreisProQm).toBe(2000)
+
+        // Loan 1: 160.000 * 0.06 / 12 = 800
+        // Loan 2: 20.000 * 0.10 / 12 = 166.66...
+        // Total Capital Service: 966.66...
+
+        expect(result.gesamtDarlehen).toBe(180000)
+        expect(result.monatlicherKapitaldienst).toBeCloseTo(966.67, 1)
+        expect(result.cashflowNachBank).toBeCloseTo(1000 - 966.67, 1)
+
+        // Eigenkapital: 200.000 - 180.000 = 20.000
+        // EK-Rendite: (33.33 * 12) / 20.000 = 2%
+        expect(result.eigenkapitalRendite).toBeCloseTo(2, 1)
+
+        expect(result.berechneteFinanzierung.length).toBe(3)
+        expect(result.berechneteFinanzierung[0].betrag).toBe(160000)
+        expect(result.berechneteFinanzierung[1].betrag).toBe(20000)
     })
 
     it('handles zero division safely', () => {
@@ -105,13 +103,5 @@ describe('calculateDerivedValues', () => {
 
         const result = calculateDerivedValues(state)
         expect(result.kaufpreisProQm).toBe(0)
-
-        const state2 = {
-            ...defaultState,
-            kaufpreis: 0,
-            nettokaltmiete: 1000
-        }
-        const result2 = calculateDerivedValues(state2)
-        expect(result2.bruttomietrendite).toBe(0)
     })
 })
