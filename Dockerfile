@@ -8,11 +8,17 @@ WORKDIR /app
 # Kopiere zuerst nur die package-Dateien (für besseres Caching von Docker)
 COPY package*.json ./
 
-# Installiere die Abhängigkeiten (npm installation)
-RUN npm install
+# Installiere die Abhängigkeiten (verbose für mehr Output bei Fehlern, no-audit für Speed)
+RUN npm install --verbose
 
 # Kopiere den Rest des Projektcodes
 COPY . .
+
+# Setze CI Environment Variable damit Vitest nicht im Watch-Mode läuft
+ENV CI=true
+
+# Führe Tests aus (run flag erzwingt einmaligen Durchlauf) und zeige Fehler an
+RUN npm test -- run
 
 # Baue die App für die Produktion (erstellt den /dist Ordner)
 # Vite ersetzt dabei import.meta.env.VITE_GOOGLE_API_KEY mit dem echten Wert
@@ -24,6 +30,9 @@ FROM nginx:alpine
 
 # Kopiere die gebauten Dateien aus Stage 1 in das Nginx-Verzeichnis
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Kopiere die Nginx-Konfiguration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Port 80 freigeben
 EXPOSE 80

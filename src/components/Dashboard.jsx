@@ -3,7 +3,13 @@ import { useCalculation } from '../hooks/useCalculation'
 import { Euro, Home, TrendingUp, Calculator } from 'lucide-react'
 
 const Dashboard = () => {
-  const { state } = useCalculation()
+  const { state, clearData } = useCalculation()
+
+  const handleClearData = () => {
+    if (window.confirm('Möchten Sie wirklich alle Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden.')) {
+      clearData()
+    }
+  }
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('de-DE', {
@@ -90,7 +96,7 @@ const Dashboard = () => {
               <span className="text-gray-600">Nebenkosten:</span>
               <span className="font-medium">
                 {formatCurrency(
-                  state.berechneteNebenkosten 
+                  state.berechneteNebenkosten
                     ? Object.values(state.berechneteNebenkosten).reduce((sum, val) => sum + val, 0)
                     : Object.values(state.kaufnebenkosten).reduce((sum, val) => sum + (parseFloat(val) || 0), 0)
                 )}
@@ -128,30 +134,18 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Options */}
       <div className="card">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Schnellzugriff
+          Optionen
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <a
-            href="/investment"
-            className="btn-primary text-center block"
+        <div>
+          <button
+            onClick={handleClearData}
+            className="bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-md transition-colors duration-200 w-full sm:w-auto"
           >
-            Investition bearbeiten
-          </a>
-          <a
-            href="/cashflow"
-            className="btn-secondary text-center block"
-          >
-            Cashflow analysieren
-          </a>
-          <a
-            href="/charts"
-            className="btn-secondary text-center block"
-          >
-            Diagramme anzeigen
-          </a>
+            Daten zurücksetzen
+          </button>
         </div>
       </div>
     </div>

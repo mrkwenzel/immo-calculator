@@ -9,6 +9,15 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - Übersicht aller wichtigen Kennzahlen
 - Gesamtinvestition, Renditen und Cashflow auf einen Blick
 - Schnellzugriff auf alle Funktionen
+- **NEU**: Persistente Datenspeicherung (LocalStorage)
+- **NEU**: Daten zurücksetzen Funktion
+
+### ✨ Eingabe & Validierung
+
+- Echtzeit-Validierung aller Eingaben
+- Warnung bei unrealistischen Werten
+- Flexible Eingabe: Absolut (€) oder Prozent (%)
+- Übersichtliche Fehlermeldungen
 
 ### 🧮 Investitionsrechner
 
@@ -63,6 +72,12 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 - Scrollbare Tabellen
 - Responsive Diagramme
 - Touch-optimierte Bedienung
+
+### ✅ Tests & Qualitätssicherung
+
+- **Vitest** - Schnelles Testing-Framework
+- **React Testing Library** - Component Testing
+- **Automatische Tests** im Docker-Build-Prozess
 
 ## Installation & Start (lokal)
 
@@ -143,16 +158,25 @@ Die Webapp berechnet automatisch:
 
 ## Projektstruktur
 
-```text
 src/
 ├── components/          # React Komponenten
+│   ├── investment/      # Investitionsrechner-Komponenten
+│   │   ├── BasicDataForm.jsx
+│   │   ├── AncillaryCostsForm.jsx
+│   │   ├── RentalDataForm.jsx
+│   │   ├── ResultsDisplay.jsx
+│   │   └── InvestmentRating.jsx
 │   ├── Navigation.jsx   # Hauptnavigation
 │   ├── Dashboard.jsx    # Dashboard-Übersicht
-│   ├── InvestmentCalculator.jsx  # Investitionsrechner
+│   ├── InvestmentCalculator.jsx  # Hauptkomponente Investition
 │   ├── CashflowAnalysis.jsx      # Cashflow-Analyse
-│   └── Charts.jsx       # Diagramme
+│   ├── Charts.jsx       # Diagramme
+│   └── InputField.jsx   # Wiederverwendbare Eingabekomponente
 ├── hooks/
-│   └── useCalculation.jsx  # State Management
+│   ├── useCalculation.jsx  # State Management & Berechnung
+│   └── useLocalStorage.jsx # Daten-Persistenz
+├── utils/
+│   └── validation.js    # Validierungslogik
 ├── App.jsx             # Hauptkomponente
 ├── main.jsx           # Entry Point
 └── index.css          # Globale Styles
