@@ -1,5 +1,3 @@
-import React from 'react'
-
 /**
  * Input component that supports switching between absolute (€) and percentage (%) modes
  */

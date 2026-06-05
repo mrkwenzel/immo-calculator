@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
 import { formatCurrency } from '../utils/formatters'

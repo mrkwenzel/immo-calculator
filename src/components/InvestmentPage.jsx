@@ -1,4 +1,3 @@
-import React from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import BasicDataForm from './investment/BasicDataForm'
 import AncillaryCostsForm from './investment/AncillaryCostsForm'

@@ -1,4 +1,3 @@
-import React from 'react'
 import InputField from '../InputField'
 import { validateRent, validateCosts } from '../../utils/validation'
 
@@ -8,7 +7,6 @@ const RentalDataForm = ({
     umlagefaehigeKosten,
     nichtUmlagefaehigeKosten,
     hausgeld,
-    hausgeldQuote,
     monatlicheMiete,
     onNettokaltmieteChange,
     onStellplatzmieteChange,

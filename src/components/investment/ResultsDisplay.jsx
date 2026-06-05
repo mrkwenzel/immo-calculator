@@ -1,5 +1,4 @@
-import React from 'react'
-import { Landmark, TrendingUp } from 'lucide-react'
+import { Landmark } from 'lucide-react'
 import { formatCurrency, formatPercent } from '../../utils/formatters'
 
 const ResultsDisplay = ({

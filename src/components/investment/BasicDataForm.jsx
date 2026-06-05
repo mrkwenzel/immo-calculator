@@ -1,4 +1,3 @@
-import React from 'react'
 import { Calculator } from 'lucide-react'
 import InputField from '../InputField'
 import { validatePurchasePrice, validateArea } from '../../utils/validation'

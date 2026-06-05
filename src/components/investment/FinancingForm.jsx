@@ -1,4 +1,3 @@
-import React from 'react'
 import InputField from '../InputField'
 import DualModeInput from './DualModeInput'
 import { Landmark } from 'lucide-react'
@@ -20,7 +19,6 @@ const FinancingForm = ({
             <div className="space-y-8">
                 {finanzierung.map((loan, index) => {
                     const result = berechneteFinanzierung[index] || { betrag: 0, rate: 0 }
-                    const isOptional = index > 0
                     const title = index === 0 ? "Darlehen 1 (Hauptfinanzierung)" : `Darlehen ${index + 1} (Optional)`
 
                     return (

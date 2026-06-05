@@ -1,4 +1,3 @@
-import React from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { Euro, Home, TrendingUp, Calculator } from 'lucide-react'
 import { formatCurrency, formatPercent } from '../utils/formatters'

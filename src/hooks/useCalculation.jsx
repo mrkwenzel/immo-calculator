@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useReducer, useEffect } from 'react'
 
 const CalculationContext = createContext()
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import DualModeInput from './DualModeInput'
 
 const AncillaryCostsForm = ({

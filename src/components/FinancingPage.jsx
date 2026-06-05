@@ -1,4 +1,3 @@
-import React from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import FinancingForm from './investment/FinancingForm'
 import ResultsDisplay from './investment/ResultsDisplay'
