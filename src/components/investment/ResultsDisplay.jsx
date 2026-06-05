@@ -1,5 +1,6 @@
 import React from 'react'
 import { Landmark, TrendingUp } from 'lucide-react'
+import { formatCurrency, formatPercent } from '../../utils/formatters'
 
 const ResultsDisplay = ({
     state,
@@ -8,14 +9,6 @@ const ResultsDisplay = ({
     showCashflow = false,
     showFinancing = false
 }) => {
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('de-DE', {
-            style: 'currency',
-            currency: 'EUR'
-        }).format(value || 0)
-    }
-
-    const formatPercent = (value) => (value || 0).toFixed(2)
 
     return (
         <div className="card">

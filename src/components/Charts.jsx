@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
+import { formatCurrency } from '../utils/formatters'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 
 const Charts = () => {
@@ -9,15 +10,8 @@ const Charts = () => {
   const [mietSteigerung] = useState(2)
   const [kostenSteigerung] = useState(2)
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(value || 0)
-  }
-
   // Cashflow-Daten für Diagramme
-  const calculateChartData = () => {
+  const chartData = useMemo(() => {
     const rawProjection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
     
     return rawProjection.map(row => ({
@@ -29,19 +23,19 @@ const Charts = () => {
       cashflow: Math.round(row.nettoCashflow),
       kumuliert: Math.round(row.kumuliert)
     }))
-  }
+  }, [state, years, mietSteigerung, kostenSteigerung])
 
   // Kostenverteilung für Pie Chart
-  const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
-  const kostenData = [
-    { name: 'Kaufpreis', value: state.kaufpreis, color: '#3b82f6' },
-    { name: 'Makler', value: actualNebenkosten.makler, color: '#ef4444' },
-    { name: 'Notar', value: actualNebenkosten.notar, color: '#f59e0b' },
-    { name: 'Grunderwerbssteuer', value: actualNebenkosten.grunderwerbssteuer, color: '#10b981' },
-    { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
-  ].filter(item => item.value > 0)
-
-  const chartData = calculateChartData()
+  const kostenData = useMemo(() => {
+    const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
+    return [
+      { name: 'Kaufpreis', value: state.kaufpreis, color: '#3b82f6' },
+      { name: 'Makler', value: actualNebenkosten.makler, color: '#ef4444' },
+      { name: 'Notar', value: actualNebenkosten.notar, color: '#f59e0b' },
+      { name: 'Grunderwerbssteuer', value: actualNebenkosten.grunderwerbssteuer, color: '#10b981' },
+      { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
+    ].filter(item => item.value > 0)
+  }, [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {

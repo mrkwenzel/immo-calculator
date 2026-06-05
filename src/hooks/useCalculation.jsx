@@ -294,13 +294,17 @@ export function CalculationProvider({ children }) {
   const [state, dispatch] = useReducer(calculationReducer, getInitialState())
 
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        }
+      } catch (error) {
+        console.error('Error saving state to localStorage:', error)
       }
-    } catch (error) {
-      console.error('Error saving state to localStorage:', error)
-    }
+    }, 500)
+    
+    return () => clearTimeout(timer)
   }, [state])
 
   const updateField = (field, value) => {

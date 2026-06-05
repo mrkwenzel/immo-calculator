@@ -1,6 +1,7 @@
 import React from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { Euro, Home, TrendingUp, Calculator } from 'lucide-react'
+import { formatCurrency, formatPercent } from '../utils/formatters'
 
 const Dashboard = () => {
   const { state, clearData } = useCalculation()
@@ -9,17 +10,6 @@ const Dashboard = () => {
     if (window.confirm('Möchten Sie wirklich alle Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden.')) {
       clearData()
     }
-  }
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(value || 0)
-  }
-
-  const formatPercent = (value) => {
-    return `${(value || 0).toFixed(2)}%`
   }
 
   const stats = [

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
+import { formatCurrency } from '../utils/formatters'
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
 
 const CashflowAnalysis = () => {
@@ -9,14 +10,9 @@ const CashflowAnalysis = () => {
   const [mietSteigerung, setMietSteigerung] = useState(2)
   const [kostenSteigerung, setKostenSteigerung] = useState(2)
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(value || 0)
-  }
-
-  const projection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
+  const projection = useMemo(() => 
+    calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung),
+  [state, years, mietSteigerung, kostenSteigerung])
   const totalCashflow = projection[projection.length - 1]?.kumuliert || 0
   const averageYearlyCashflow = totalCashflow / years
 
