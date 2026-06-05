@@ -70,14 +70,15 @@ const defaultState = {
 
 function calculationReducer(state, action) {
   switch (action.type) {
-    case 'UPDATE_FIELD':
+    case 'UPDATE_FIELD': {
       const newState = {
         ...state,
         [action.field]: action.value
       }
       return calculateDerivedValues(newState)
+    }
 
-    case 'UPDATE_NEBENKOSTEN':
+    case 'UPDATE_NEBENKOSTEN': {
       const newNebenkosten = {
         ...state.kaufnebenkosten,
         [action.field]: action.value
@@ -87,8 +88,9 @@ function calculationReducer(state, action) {
         kaufnebenkosten: newNebenkosten
       }
       return calculateDerivedValues(stateWithNebenkosten)
+    }
 
-    case 'UPDATE_NEBENKOSTEN_PROZENT':
+    case 'UPDATE_NEBENKOSTEN_PROZENT': {
       const newNebenkostenProzent = {
         ...state.nebenkostenProzentual,
         [action.field]: action.value
@@ -98,8 +100,9 @@ function calculationReducer(state, action) {
         nebenkostenProzentual: newNebenkostenProzent
       }
       return calculateDerivedValues(stateWithNebenkostenProzent)
+    }
 
-    case 'UPDATE_NEBENKOSTEN_MODUS':
+    case 'UPDATE_NEBENKOSTEN_MODUS': {
       const newNebenkostenModus = {
         ...state.nebenkostenModus,
         [action.field]: action.value
@@ -109,8 +112,9 @@ function calculationReducer(state, action) {
         nebenkostenModus: newNebenkostenModus
       }
       return calculateDerivedValues(stateWithModus)
+    }
 
-    case 'UPDATE_FINANZIERUNG':
+    case 'UPDATE_FINANZIERUNG': {
       // action.index is required
       const loans = [...state.finanzierung]
       loans[action.index] = {
@@ -121,6 +125,7 @@ function calculationReducer(state, action) {
         ...state,
         finanzierung: loans
       })
+    }
 
     case 'RESET_STATE':
       return calculateDerivedValues(defaultState)

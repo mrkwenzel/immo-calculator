@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
+import { calculateCashflowProjection } from '../utils/cashflowProjection'
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
 
 const CashflowAnalysis = () => {
@@ -15,47 +16,7 @@ const CashflowAnalysis = () => {
     }).format(value || 0)
   }
 
-  const calculateCashflowProjection = () => {
-    const projection = []
-    let currentMiete = (parseFloat(state.nettokaltmiete) || 0) + (parseFloat(state.stellplatzmiete) || 0)
-    let currentKosten = parseFloat(state.nichtUmlagefaehigeKosten) || 0
-    const mtlBankrateGesamt = parseFloat(state.monatlicherKapitaldienst) || 0
-    const mtlBankrateRelevant = parseFloat(state.kapitaldienstRelevantForCashflow) || 0
-
-    for (let year = 1; year <= years; year++) {
-      if (year > 1) {
-        currentMiete *= (1 + mietSteigerung / 100)
-        currentKosten *= (1 + kostenSteigerung / 100)
-      }
-
-      const jahresmiete = currentMiete * 12
-      const jahreskosten = currentKosten * 12
-      const jahresOperativerCashflow = jahresmiete - jahreskosten
-      const jahresBankrateGesamt = mtlBankrateGesamt * 12
-      const jahresBankrateRelevant = mtlBankrateRelevant * 12
-
-      const nettoCashflow = jahresOperativerCashflow - jahresBankrateRelevant
-      const kumuliert = projection.length > 0
-        ? projection[projection.length - 1].kumuliert + nettoCashflow
-        : nettoCashflow
-
-      projection.push({
-        year,
-        jahresmiete,
-        jahreskosten,
-        jahresOperativerCashflow,
-        jahresBankrateGesamt,
-        nettoCashflow,
-        kumuliert,
-        monatlicheMiete: currentMiete,
-        monatlicheKosten: currentKosten
-      })
-    }
-
-    return projection
-  }
-
-  const projection = calculateCashflowProjection()
+  const projection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
   const totalCashflow = projection[projection.length - 1]?.kumuliert || 0
   const averageYearlyCashflow = totalCashflow / years
 

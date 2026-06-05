@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
+import { calculateCashflowProjection } from '../utils/cashflowProjection'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 
 const Charts = () => {
@@ -17,45 +18,27 @@ const Charts = () => {
 
   // Cashflow-Daten für Diagramme
   const calculateChartData = () => {
-    const data = []
-    let currentMiete = (parseFloat(state.nettokaltmiete) || 0) + (parseFloat(state.stellplatzmiete) || 0)
-    let currentOperativ = parseFloat(state.nichtUmlagefaehigeKosten) || 0
-    const jahresKapitaldienst = (state.monatlicherKapitaldienst || 0) * 12
-    let kumuliert = 0
-
-    for (let year = 1; year <= years; year++) {
-      if (year > 1) {
-        currentMiete *= (1 + mietSteigerung / 100)
-        currentOperativ *= (1 + kostenSteigerung / 100)
-      }
-
-      const jahresmiete = currentMiete * 12
-      const jahresOperativ = currentOperativ * 12
-      // Cashflow = Miete - Operativ - Bank
-      const nettoCashflow = jahresmiete - jahresOperativ - jahresKapitaldienst
-      kumuliert += nettoCashflow
-
-      data.push({
-        year: `Jahr ${year}`,
-        miete: Math.round(jahresmiete),
-        operativ: Math.round(jahresOperativ),
-        bank: Math.round(jahresKapitaldienst),
-        totalKosten: Math.round(jahresOperativ + jahresKapitaldienst),
-        cashflow: Math.round(nettoCashflow),
-        kumuliert: Math.round(kumuliert)
-      })
-    }
-
-    return data
+    const rawProjection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
+    
+    return rawProjection.map(row => ({
+      year: `Jahr ${row.year}`,
+      miete: Math.round(row.jahresmiete),
+      operativ: Math.round(row.jahreskosten),
+      bank: Math.round(row.jahresBankrateGesamt),
+      totalKosten: Math.round(row.jahreskosten + row.jahresBankrateGesamt),
+      cashflow: Math.round(row.nettoCashflow),
+      kumuliert: Math.round(row.kumuliert)
+    }))
   }
 
   // Kostenverteilung für Pie Chart
+  const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
   const kostenData = [
     { name: 'Kaufpreis', value: state.kaufpreis, color: '#3b82f6' },
-    { name: 'Makler', value: state.kaufnebenkosten.makler, color: '#ef4444' },
-    { name: 'Notar', value: state.kaufnebenkosten.notar, color: '#f59e0b' },
-    { name: 'Grunderwerbssteuer', value: state.kaufnebenkosten.grunderwerbssteuer, color: '#10b981' },
-    { name: 'Sonstige', value: state.kaufnebenkosten.sonstige, color: '#8b5cf6' }
+    { name: 'Makler', value: actualNebenkosten.makler, color: '#ef4444' },
+    { name: 'Notar', value: actualNebenkosten.notar, color: '#f59e0b' },
+    { name: 'Grunderwerbssteuer', value: actualNebenkosten.grunderwerbssteuer, color: '#10b981' },
+    { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
   ].filter(item => item.value > 0)
 
   const chartData = calculateChartData()
