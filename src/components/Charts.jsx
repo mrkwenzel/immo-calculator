@@ -4,12 +4,28 @@ import { calculateCashflowProjection } from '../utils/cashflowProjection'
 import { formatCurrency } from '../utils/formatters'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 border border-gray-300 rounded-lg shadow-lg">
+        <p className="font-medium">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color }}>
+            {entry.name}: {formatCurrency(entry.value)}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
+
 const Charts = () => {
   const { state } = useCalculation()
   const [years] = useState(10)
   const [mietSteigerung] = useState(2)
   const [kostenSteigerung] = useState(2)
-
+  
   // Cashflow-Daten für Diagramme
   const chartData = useMemo(() => {
     const rawProjection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
@@ -24,7 +40,7 @@ const Charts = () => {
       kumuliert: Math.round(row.kumuliert)
     }))
   }, [state, years, mietSteigerung, kostenSteigerung])
-
+  
   // Kostenverteilung für Pie Chart
   const kostenData = useMemo(() => {
     const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
@@ -36,23 +52,7 @@ const Charts = () => {
       { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
     ].filter(item => item.value > 0)
   }, [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
-
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border border-gray-300 rounded-lg shadow-lg">
-          <p className="font-medium">{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {formatCurrency(entry.value)}
-            </p>
-          ))}
-        </div>
-      )
-    }
-    return null
-  }
-
+  
   return (
     <div className="space-y-6">
       <div className="text-center">

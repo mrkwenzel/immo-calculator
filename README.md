@@ -141,7 +141,7 @@ Die Webapp berechnet automatisch:
 
 ## Projektstruktur
 
-```
+```text
 src/
 ├── components/          # React Komponenten
 │   ├── investment/      # Formulare & Anzeigen

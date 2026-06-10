@@ -188,7 +188,7 @@ export function calculateDerivedValues(state) {
   const umlagefaehigProQm = wohnflaeche > 0 ? umlagefaehig / wohnflaeche : 0
 
   // Finanzierung (Multi-Loan)
-  let loans = []
+  let loans
   if (Array.isArray(state.finanzierung)) {
     loans = state.finanzierung
   } else if (state.finanzierung) {
@@ -209,7 +209,7 @@ export function calculateDerivedValues(state) {
 
   loans.forEach(loan => {
     const inputAmount = parseFloat(loan.darlehensbetrag) || 0
-    let loanAmount = 0
+    let loanAmount
 
     if (loan.modus === 'prozent') {
       loanAmount = (kaufpreis * inputAmount) / 100
