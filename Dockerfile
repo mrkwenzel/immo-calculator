@@ -1,6 +1,7 @@
 # --- Stage 1: Build ---
-# Use the current Node 22 Image (LTS)
-FROM node:22-alpine AS builder
+# Use the latest Node 26 Alpine Image
+FROM node:26-alpine AS builder
+
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -28,7 +29,7 @@ RUN npm run build
 
 # --- Stage 2: Serve ---
 # Use a lightweight Nginx server for delivery
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine
 
 # Copy the built files from Stage 1 into the Nginx directory
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -36,8 +37,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy the Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080
+EXPOSE 8080
 
 # Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]

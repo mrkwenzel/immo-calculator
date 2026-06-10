@@ -113,7 +113,7 @@ docker build -t immo-calculator .
 ## Container starten
 
 ```bash
-docker run -p 8080:80 immo-calculator
+docker run -p 8080:8080 immo-calculator
 ```
 
 ## App aufrufen
