@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
-import { buildKostenPieData } from '../utils/calculations/investment'
+import { buildEigenkapitalPieData } from '../utils/calculations/investment'
 import { formatCurrency } from '../utils/formatters'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -55,10 +55,10 @@ const Charts = () => {
     ? (chartData.find(d => d.yearLabel.includes(`(${todayYear})`))?.yearLabel ?? null)
     : null
 
-  // Kostenverteilung für Pie Chart
-  const kostenData = useMemo(() => buildKostenPieData(state),
+  // Eigenkapital-Verteilung für Pie Chart
+  const kostenData = useMemo(() => buildEigenkapitalPieData(state),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
+    [state.kaufpreis, state.gesamtDarlehen, state.berechneteNebenkosten, state.kaufnebenkosten])
 
   return (
     <div className="space-y-6">
@@ -143,31 +143,37 @@ const Charts = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Kostenverteilung */}
+        {/* Eigenkapital-Verteilung */}
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Investitionskosten-Verteilung
+            Eigenkapital-Verteilung
           </h3>
           <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={kostenData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {kostenData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => formatCurrency(value)} />
-              </PieChart>
-            </ResponsiveContainer>
+            {kostenData.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                Vollständig fremdfinanziert
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={kostenData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {kostenData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
