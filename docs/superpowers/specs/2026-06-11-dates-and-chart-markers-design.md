@@ -1,7 +1,7 @@
 # Design Spec: Kaufvertragsdatum, Besitzübergangsdatum & Chart-Datummarker
 
 Date: 2026-06-11
-Topic: Date fields for investment data, calendar year labels in charts, "Heute" reference line
+Topic: Date fields for investment data, calendar year labels in charts, "Heute" reference line, cashflow-seit-Besitzübergang tile
 
 ---
 
@@ -83,13 +83,46 @@ Only renders when `besitzuebergangsdatum` is set and today's year is within the 
 
 ---
 
-## 5. Cashflow Table (`src/components/cashflow/CashflowPresentational.jsx`)
+## 5. "Cashflow seit Besitzübergang" Tile
+
+### 5.1 Visibility
+Only rendered when `besitzuebergangsdatum` is set **and** the date is in the past relative to today.
+
+### 5.2 Calculation (`src/utils/cashflowProjection.js`)
+A new exported helper `calculateCashflowSincePossession(state, mietSteigerung, kostenSteigerung)`:
+
+1. Derive `startDate` from `state.besitzuebergangsdatum`.
+2. Derive `today = new Date()`.
+3. Compute `elapsedMonths` = total months elapsed since `startDate` (fractional allowed, rounded to whole months for display).
+4. Walk month by month through the same growth model as `calculateCashflowProjection`: apply `mietSteigerung` and `kostenSteigerung` compounded annually per year boundary.
+5. Accumulate `(miete - nichtUmlagefaehig - bankrateRelevant)` for each elapsed month.
+6. Return `{ totalCashflow, elapsedMonths }`.
+
+### 5.3 Display (`src/components/cashflow/CashflowContainer.jsx`)
+A fourth summary card is added to `CashflowSummaryCards` (or a separate card below if the layout would become cramped — use a separate row):
+
+```
+┌──────────────────────────────────────────┐
+│ 💰  Cashflow seit Besitzübergang          │
+│     € 3.240 (27 Monate)                  │
+└──────────────────────────────────────────┘
+```
+
+- Title: "Cashflow seit Besitzübergang"
+- Value: formatted currency
+- Subtitle: `N Monate` elapsed
+- Color: green if positive, red if negative
+- Only shown when `besitzuebergangsdatum` is set and in the past
+
+---
+
+## 6. Cashflow Table (`src/components/cashflow/CashflowPresentational.jsx`)
 
 `CashflowTable` receives `yearLabel` from each row and displays it in the "Jahr" column. No structural changes to the table — only the cell value changes from `row.year` to `row.yearLabel`.
 
 ---
 
-## 6. Investment Form
+## 7. Investment Form
 
 ### 6.1 `src/components/investment/BasicDataForm.jsx`
 Two new `<input type="date">` fields added below the existing Wohnfläche field:
@@ -109,7 +142,7 @@ Reads `state.kaufvertragsdatum` and `state.besitzuebergangsdatum` and calls `upd
 
 ---
 
-## 7. Success Criteria
+## 8. Success Criteria
 
 - Both date fields appear in Investitionsdaten and are persisted across page reloads.
 - When `besitzuebergangsdatum` is set, chart x-axis labels show `Jahr N (YYYY)`.
@@ -117,3 +150,6 @@ Reads `state.kaufvertragsdatum` and `state.besitzuebergangsdatum` and calls `upd
 - A dashed red "Heute" reference line appears on both time-series charts when today's year is in the projection range.
 - The cashflow table's Jahr column shows `yearLabel` (with calendar year when available).
 - All existing tests pass; new unit tests cover `calculateCashflowProjection` with and without `startYear`.
+- "Cashflow seit Besitzübergang" tile appears on the Cashflow page only when date is set and in the past.
+- Tile value matches the growth-rate-compounded calculation for elapsed months.
+- Tile is hidden when `besitzuebergangsdatum` is not set or is in the future.
