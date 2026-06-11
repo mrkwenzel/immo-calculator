@@ -91,7 +91,7 @@ const Charts = () => {
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="miete" fill="#10b981" name="Mieteinnahmen" />
-              <Bar dataKey="operativ" stackId="a" fill="#ea580c" name="Bewirtschaftung" />
+              <Bar dataKey="operativ" stackId="a" fill="#eab308" name="Bewirtschaftung" />
               <Bar dataKey="bank" stackId="a" fill="#ef4444" name="Bankrate" />
               {todayLabel && (
                 <ReferenceLine
