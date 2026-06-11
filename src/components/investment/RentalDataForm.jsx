@@ -1,4 +1,4 @@
-import InputField from '../InputField'
+import InputField from '../shared/forms/InputField'
 import { validateRent, validateCosts } from '../../utils/validation'
 
 const RentalDataForm = ({

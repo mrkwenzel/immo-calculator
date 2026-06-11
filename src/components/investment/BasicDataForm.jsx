@@ -1,5 +1,5 @@
 import { Calculator } from 'lucide-react'
-import InputField from '../InputField'
+import InputField from '../shared/forms/InputField'
 import { validatePurchasePrice, validateArea } from '../../utils/validation'
 
 const BasicDataForm = ({

@@ -1,5 +1,5 @@
-import InputField from '../InputField'
-import DualModeInput from './DualModeInput'
+import InputField from '../shared/forms/InputField'
+import DualModeInput from '../shared/forms/DualModeInput'
 import { Landmark } from 'lucide-react'
 
 const FinancingForm = ({

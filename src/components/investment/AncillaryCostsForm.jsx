@@ -1,4 +1,4 @@
-import DualModeInput from './DualModeInput'
+import DualModeInput from '../shared/forms/DualModeInput'
 
 const AncillaryCostsForm = ({
     state,
