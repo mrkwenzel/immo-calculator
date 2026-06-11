@@ -73,7 +73,7 @@ describe('buildEigenkapitalPieData', () => {
     it('normal case: Eigenkapital slice = kaufpreis - darlehen, Nebenkosten at full value', () => {
         const state = {
             kaufpreis: 200000,
-            gesamtDarlehen: 160000,
+            darlehenRelevantForCashflow: 160000,
             berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 0 }
         }
         const data = buildEigenkapitalPieData(state)
@@ -90,12 +90,25 @@ describe('buildEigenkapitalPieData', () => {
         expect(data.find(d => d.name === 'Sonstige')).toBeUndefined()
     })
 
+    it('non-cashflow darlehen are excluded from eigenkapital deduction', () => {
+        // 160k cashflow loan + 20k non-cashflow loan = 180k gesamtDarlehen
+        // but eigenkapital should only deduct the 160k cashflow loan
+        const state = {
+            kaufpreis: 200000,
+            darlehenRelevantForCashflow: 160000, // only this counts
+            berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 0 }
+        }
+        const data = buildEigenkapitalPieData(state)
+        const ek = data.find(d => d.name === 'Eigenkapital')
+        expect(ek.value).toBe(40000) // 200000 - 160000 (not 200000 - 180000)
+    })
+
     it('overfinanced kaufpreis: no Eigenkapital slice, Nebenkosten scaled proportionally', () => {
         // kaufpreis=200k, darlehen=210k → kaufpreisEigen=-10k
         // nebenkosten total=20k, eigenkapital=10k → scaleFactor=0.5
         const state = {
             kaufpreis: 200000,
-            gesamtDarlehen: 210000,
+            darlehenRelevantForCashflow: 210000,
             berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
         }
         const data = buildEigenkapitalPieData(state)
@@ -116,7 +129,7 @@ describe('buildEigenkapitalPieData', () => {
     it('fully overfinanced (eigenkapital <= 0): returns empty array', () => {
         const state = {
             kaufpreis: 200000,
-            gesamtDarlehen: 230000,
+            darlehenRelevantForCashflow: 230000,
             berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
         }
         const data = buildEigenkapitalPieData(state)
@@ -126,7 +139,7 @@ describe('buildEigenkapitalPieData', () => {
     it('string kaufpreis (InputField path): Eigenkapital value is numeric', () => {
         const state = {
             kaufpreis: '300000',
-            gesamtDarlehen: 240000,
+            darlehenRelevantForCashflow: 240000,
             berechneteNebenkosten: { makler: 5000, notar: 1500, grunderwerbssteuer: 15000, sonstige: 0 }
         }
         const data = buildEigenkapitalPieData(state)
@@ -137,7 +150,7 @@ describe('buildEigenkapitalPieData', () => {
     it('falls back to kaufnebenkosten when berechneteNebenkosten is absent', () => {
         const state = {
             kaufpreis: 150000,
-            gesamtDarlehen: 100000,
+            darlehenRelevantForCashflow: 100000,
             kaufnebenkosten: { makler: 3000, notar: 1000, grunderwerbssteuer: 7500, sonstige: 0 }
         }
         const data = buildEigenkapitalPieData(state)
@@ -148,7 +161,7 @@ describe('buildEigenkapitalPieData', () => {
     it('eigenkapital exactly zero returns empty array', () => {
         const state = {
             kaufpreis: 200000,
-            gesamtDarlehen: 220000,
+            darlehenRelevantForCashflow: 220000,
             berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
         }
         const data = buildEigenkapitalPieData(state)

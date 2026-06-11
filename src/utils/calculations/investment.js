@@ -40,7 +40,7 @@ export function calculateInvestment(state) {
  */
 export function buildEigenkapitalPieData(state) {
   const kaufpreis = parseFloat(state.kaufpreis) || 0
-  const gesamtDarlehen = parseFloat(state.gesamtDarlehen) || 0
+  const gesamtDarlehen = parseFloat(state.darlehenRelevantForCashflow) || 0
   const nebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten || {}
 
   const nebenkostenSlices = [

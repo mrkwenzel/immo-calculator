@@ -58,7 +58,7 @@ const Charts = () => {
   // Eigenkapital-Verteilung für Pie Chart
   const kostenData = useMemo(() => buildEigenkapitalPieData(state),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state.kaufpreis, state.gesamtDarlehen, state.berechneteNebenkosten, state.kaufnebenkosten])
+    [state.kaufpreis, state.darlehenRelevantForCashflow, state.berechneteNebenkosten, state.kaufnebenkosten])
 
   return (
     <div className="space-y-6">

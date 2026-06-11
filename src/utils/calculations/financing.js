@@ -11,6 +11,7 @@ export function calculateFinancing(state) {
   if (loans.length > 3) loans = loans.slice(0, 3)
 
   let gesamtDarlehen = 0
+  let darlehenRelevantForCashflow = 0
   let monatlicherKapitaldienst = 0
   let kapitaldienstRelevantForCashflow = 0
   const berechneteFinanzierung = []
@@ -27,6 +28,7 @@ export function calculateFinancing(state) {
 
     if (loan.includeInCashflow !== false) {
       kapitaldienstRelevantForCashflow += mtlRate
+      darlehenRelevantForCashflow += loanAmount
     }
 
     berechneteFinanzierung.push({
@@ -43,6 +45,7 @@ export function calculateFinancing(state) {
     berechneteFinanzierung,
     gesamtDarlehen,
     berechnetesDarlehen: gesamtDarlehen,
+    darlehenRelevantForCashflow,
     monatlicherKapitaldienst,
     kapitaldienstRelevantForCashflow,
   }
