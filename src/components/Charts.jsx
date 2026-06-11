@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
+import { buildKostenPieData } from '../utils/calculations/investment'
 import { formatCurrency } from '../utils/formatters'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -55,16 +56,9 @@ const Charts = () => {
     : null
 
   // Kostenverteilung für Pie Chart
-  const kostenData = useMemo(() => {
-    const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
-    return [
-      { name: 'Kaufpreis', value: state.kaufpreis, color: '#3b82f6' },
-      { name: 'Makler', value: actualNebenkosten.makler, color: '#ef4444' },
-      { name: 'Notar', value: actualNebenkosten.notar, color: '#f59e0b' },
-      { name: 'Grunderwerbssteuer', value: actualNebenkosten.grunderwerbssteuer, color: '#10b981' },
-      { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
-    ].filter(item => item.value > 0)
-  }, [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
+  const kostenData = useMemo(() => buildKostenPieData(state),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
 
   return (
     <div className="space-y-6">

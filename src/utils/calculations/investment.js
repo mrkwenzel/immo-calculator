@@ -26,3 +26,19 @@ export function calculateInvestment(state) {
     berechneteNebenkosten: actualNebenkosten,
   }
 }
+
+/**
+ * Builds the data array for the Investitionskosten-Verteilung pie chart.
+ * Ensures kaufpreis is parsed as a number so Recharts can compute percentages.
+ */
+export function buildKostenPieData(state) {
+  const kaufpreis = parseFloat(state.kaufpreis) || 0
+  const nebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten || {}
+  return [
+    { name: 'Kaufpreis', value: kaufpreis, color: '#3b82f6' },
+    { name: 'Makler', value: nebenkosten.makler || 0, color: '#ef4444' },
+    { name: 'Notar', value: nebenkosten.notar || 0, color: '#f59e0b' },
+    { name: 'Grunderwerbssteuer', value: nebenkosten.grunderwerbssteuer || 0, color: '#10b981' },
+    { name: 'Sonstige', value: nebenkosten.sonstige || 0, color: '#8b5cf6' },
+  ].filter(item => item.value > 0)
+}

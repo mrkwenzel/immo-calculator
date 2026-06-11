@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calculateInvestment } from '../calculations/investment.js'
+import { calculateInvestment, buildKostenPieData } from '../calculations/investment.js'
 
 describe('calculateInvestment', () => {
     it('calculates total investment with absolute costs', () => {
@@ -66,5 +66,37 @@ describe('calculateInvestment', () => {
         }
         const result = calculateInvestment(state)
         expect(result.berechneteNebenkosten.makler).toBe(0)
+    })
+})
+
+describe('buildKostenPieData', () => {
+    it('includes kaufpreis as a numeric value when stored as string (InputField passes strings)', () => {
+        const state = {
+            kaufpreis: '250000', // InputField stores raw string from e.target.value
+            berechneteNebenkosten: { makler: 3750, notar: 1500, grunderwerbssteuer: 12500, sonstige: 0 }
+        }
+        const data = buildKostenPieData(state)
+        const kaufpreisEntry = data.find(d => d.name === 'Kaufpreis')
+        expect(kaufpreisEntry).toBeDefined()
+        expect(kaufpreisEntry.value).toBe(250000)
+    })
+
+    it('excludes items with value 0 from the pie', () => {
+        const state = {
+            kaufpreis: 100000,
+            berechneteNebenkosten: { makler: 0, notar: 500, grunderwerbssteuer: 0, sonstige: 0 }
+        }
+        const data = buildKostenPieData(state)
+        expect(data.find(d => d.name === 'Makler')).toBeUndefined()
+        expect(data.find(d => d.name === 'Notar')).toBeDefined()
+    })
+
+    it('falls back to kaufnebenkosten when berechneteNebenkosten is absent', () => {
+        const state = {
+            kaufpreis: 200000,
+            kaufnebenkosten: { makler: 5000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 0 }
+        }
+        const data = buildKostenPieData(state)
+        expect(data.find(d => d.name === 'Makler').value).toBe(5000)
     })
 })
