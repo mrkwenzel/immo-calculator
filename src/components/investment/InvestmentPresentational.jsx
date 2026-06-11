@@ -23,8 +23,12 @@ const BasicInvestmentForm = ({ state, updateField, updateNebenkosten, updateNebe
         <BasicDataForm
             kaufpreis={state.kaufpreis}
             wohnflaeche={state.wohnflaeche}
+            kaufvertragsdatum={state.kaufvertragsdatum}
+            besitzuebergangsdatum={state.besitzuebergangsdatum}
             onKaufpreisChange={(val) => updateField('kaufpreis', val)}
             onWohnflaecheChange={(val) => updateField('wohnflaeche', val)}
+            onKaufvertragsdatumChange={(val) => updateField('kaufvertragsdatum', val)}
+            onBesitzuebergangsdatumChange={(val) => updateField('besitzuebergangsdatum', val)}
         />
         <AncillaryCostsForm
             state={state}
