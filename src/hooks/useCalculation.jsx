@@ -1,8 +1,18 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useReducer, useEffect } from 'react'
+import { calculateDerivedValues } from '../utils/calculations/index.js'
 
 const CalculationContext = createContext()
 
 const STORAGE_KEY = 'immo-calculator-data'
+
+const defaultLoan = {
+  darlehensbetrag: 0,
+  modus: 'prozent', // 'absolut' oder 'prozent'
+  zinssatz: 3.5,
+  tilgung: 2.0,
+  includeInCashflow: true
+}
 
 const defaultState = {
   // Investitionsdaten
@@ -29,29 +39,52 @@ const defaultState = {
   },
   wohnflaeche: 0,
 
+  // Datumsfelder
+  kaufvertragsdatum: '',        // ISO date string YYYY-MM-DD, optional
+  besitzuebergangsdatum: '',    // ISO date string YYYY-MM-DD, optional
+
   // Mietdaten
   nettokaltmiete: 0,
-  warmmiete: 0,
-  bewirtschaftungskosten: 0,
+  stellplatzmiete: 0,
+  umlagefaehigeKosten: 0,
+  nichtUmlagefaehigeKosten: 0,
+
+  // Finanzierung (Array of 3 Loans)
+  finanzierung: [
+    { ...defaultLoan, darlehensbetrag: 80 }, // Loan 1 Default 80%
+    { ...defaultLoan }, // Loan 2
+    { ...defaultLoan }  // Loan 3
+  ],
 
   // Berechnete Werte
   gesamtinvestition: 0,
   kaufpreisProQm: 0,
   bruttomietrendite: 0,
   nettomietrendite: 0,
-  monatlicheCashflow: 0
+  monatlicheCashflow: 0,
+  hausgeld: 0,
+  hausgeldQuote: 0,
+
+  // Berechnete Finanzwerte
+  berechneteFinanzierung: [], // Details per loan
+  gesamtDarlehen: 0,
+  monatlicherKapitaldienst: 0,
+  cashflowNachBank: 0,
+  eigenkapital: 0,
+  eigenkapitalRendite: 0
 }
 
 function calculationReducer(state, action) {
   switch (action.type) {
-    case 'UPDATE_FIELD':
+    case 'UPDATE_FIELD': {
       const newState = {
         ...state,
         [action.field]: action.value
       }
       return calculateDerivedValues(newState)
+    }
 
-    case 'UPDATE_NEBENKOSTEN':
+    case 'UPDATE_NEBENKOSTEN': {
       const newNebenkosten = {
         ...state.kaufnebenkosten,
         [action.field]: action.value
@@ -61,8 +94,9 @@ function calculationReducer(state, action) {
         kaufnebenkosten: newNebenkosten
       }
       return calculateDerivedValues(stateWithNebenkosten)
+    }
 
-    case 'UPDATE_NEBENKOSTEN_PROZENT':
+    case 'UPDATE_NEBENKOSTEN_PROZENT': {
       const newNebenkostenProzent = {
         ...state.nebenkostenProzentual,
         [action.field]: action.value
@@ -72,8 +106,9 @@ function calculationReducer(state, action) {
         nebenkostenProzentual: newNebenkostenProzent
       }
       return calculateDerivedValues(stateWithNebenkostenProzent)
+    }
 
-    case 'UPDATE_NEBENKOSTEN_MODUS':
+    case 'UPDATE_NEBENKOSTEN_MODUS': {
       const newNebenkostenModus = {
         ...state.nebenkostenModus,
         [action.field]: action.value
@@ -83,53 +118,26 @@ function calculationReducer(state, action) {
         nebenkostenModus: newNebenkostenModus
       }
       return calculateDerivedValues(stateWithModus)
+    }
+
+    case 'UPDATE_FINANZIERUNG': {
+      // action.index is required
+      const loans = [...state.finanzierung]
+      loans[action.index] = {
+        ...loans[action.index],
+        [action.field]: action.value
+      }
+      return calculateDerivedValues({
+        ...state,
+        finanzierung: loans
+      })
+    }
 
     case 'RESET_STATE':
       return calculateDerivedValues(defaultState)
 
     default:
       return state
-  }
-}
-
-export function calculateDerivedValues(state) {
-  // Berechne die tatsächlichen Nebenkosten basierend auf dem gewählten Modus
-  const actualNebenkosten = {}
-  const kaufpreis = parseFloat(state.kaufpreis) || 0
-
-  Object.keys(state.kaufnebenkosten).forEach(key => {
-    if (state.nebenkostenModus[key] === 'prozent') {
-      // Prozentuale Berechnung
-      const prozent = parseFloat(state.nebenkostenProzentual[key]) || 0
-      actualNebenkosten[key] = (kaufpreis * prozent) / 100
-    } else {
-      // Absolute Berechnung
-      actualNebenkosten[key] = parseFloat(state.kaufnebenkosten[key]) || 0
-    }
-  })
-
-  const gesamtnebenkosten = Object.values(actualNebenkosten).reduce((sum, val) => sum + val, 0)
-  const gesamtinvestition = kaufpreis + gesamtnebenkosten
-  const kaufpreisProQm = state.wohnflaeche > 0 ? (parseFloat(state.kaufpreis) || 0) / (parseFloat(state.wohnflaeche) || 1) : 0
-
-  const jahresmiete = (parseFloat(state.nettokaltmiete) || 0) * 12
-  const bruttomietrendite = gesamtinvestition > 0 ? (jahresmiete / gesamtinvestition) * 100 : 0
-
-  const jahresbewirtschaftung = (parseFloat(state.bewirtschaftungskosten) || 0) * 12
-  const nettoJahresmiete = jahresmiete - jahresbewirtschaftung
-  const nettomietrendite = gesamtinvestition > 0 ? (nettoJahresmiete / gesamtinvestition) * 100 : 0
-
-  const monatlicheCashflow = (parseFloat(state.nettokaltmiete) || 0) - (parseFloat(state.bewirtschaftungskosten) || 0)
-
-  return {
-    ...state,
-    gesamtinvestition,
-    kaufpreisProQm,
-    bruttomietrendite,
-    nettomietrendite,
-    monatlicheCashflow,
-    // Speichere die berechneten Nebenkosten für die Anzeige
-    berechneteNebenkosten: actualNebenkosten
   }
 }
 
@@ -143,7 +151,8 @@ export function CalculationProvider({ children }) {
 
       if (savedState) {
         const parsed = JSON.parse(savedState)
-        return calculateDerivedValues(parsed)
+        // Migration logic handles inside calculateDerivedValues
+        return calculateDerivedValues({ ...defaultState, ...parsed })
       }
     } catch (error) {
       console.error('Error loading state from localStorage:', error)
@@ -153,15 +162,18 @@ export function CalculationProvider({ children }) {
 
   const [state, dispatch] = useReducer(calculationReducer, getInitialState())
 
-  // Save to localStorage whenever state changes
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        }
+      } catch (error) {
+        console.error('Error saving state to localStorage:', error)
       }
-    } catch (error) {
-      console.error('Error saving state to localStorage:', error)
-    }
+    }, 500)
+    
+    return () => clearTimeout(timer)
   }, [state])
 
   const updateField = (field, value) => {
@@ -180,12 +192,15 @@ export function CalculationProvider({ children }) {
     dispatch({ type: 'UPDATE_NEBENKOSTEN_MODUS', field, value })
   }
 
+  const updateFinanzierung = (index, field, value) => {
+    dispatch({ type: 'UPDATE_FINANZIERUNG', index, field, value })
+  }
+
   const clearData = () => {
     try {
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem(STORAGE_KEY)
       }
-      // Reset to default state
       dispatch({ type: 'RESET_STATE' })
     } catch (error) {
       console.error('Error clearing data:', error)
@@ -199,6 +214,7 @@ export function CalculationProvider({ children }) {
       updateNebenkosten,
       updateNebenkostenProzent,
       updateNebenkostenModus,
+      updateFinanzierung,
       clearData
     }}>
       {children}

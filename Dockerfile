@@ -1,41 +1,44 @@
 # --- Stage 1: Build ---
-# Wir verwenden das aktuelle Node 22 Image (LTS)
-FROM node:22-alpine as builder
+# Use the latest Node 26 Alpine Image
+FROM node:26-alpine AS builder
 
-# Arbeitsverzeichnis im Container setzen
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Kopiere zuerst nur die package-Dateien (für besseres Caching von Docker)
+# Copy only the package files first (for better Docker caching)
 COPY package*.json ./
 
-# Installiere die Abhängigkeiten (verbose für mehr Output bei Fehlern, no-audit für Speed)
-RUN npm install --verbose
+# Install dependencies
+RUN npm ci --legacy-peer-deps
 
-# Kopiere den Rest des Projektcodes
+# Copy the rest of the project code
 COPY . .
 
-# Setze CI Environment Variable damit Vitest nicht im Watch-Mode läuft
+# Set CI Environment Variable so Vitest doesn't run in Watch-Mode
 ENV CI=true
 
-# Führe Tests aus (run flag erzwingt einmaligen Durchlauf) und zeige Fehler an
+# Run linter
+RUN npm run lint
+
+# Run tests
 RUN npm test -- run
 
-# Baue die App für die Produktion (erstellt den /dist Ordner)
-# Vite ersetzt dabei import.meta.env.VITE_GOOGLE_API_KEY mit dem echten Wert
+# Build the app for production (creates the /dist folder)
 RUN npm run build
 
 # --- Stage 2: Serve ---
-# Wir verwenden einen leichten Nginx-Server für die Auslieferung
-FROM nginx:alpine
+# Use a lightweight Nginx server for delivery
+FROM nginxinc/nginx-unprivileged:alpine
 
-# Kopiere die gebauten Dateien aus Stage 1 in das Nginx-Verzeichnis
+# Copy the built files from Stage 1 into the Nginx directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Kopiere die Nginx-Konfiguration
+# Copy the Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Port 80 freigeben
-EXPOSE 80
+# Expose port 8080
+EXPOSE 8080
 
-# Nginx im Vordergrund starten
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
