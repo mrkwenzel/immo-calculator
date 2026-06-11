@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calculateInvestment, buildKostenPieData } from '../calculations/investment.js'
+import { calculateInvestment, buildEigenkapitalPieData } from '../calculations/investment.js'
 
 describe('calculateInvestment', () => {
     it('calculates total investment with absolute costs', () => {
@@ -69,34 +69,89 @@ describe('calculateInvestment', () => {
     })
 })
 
-describe('buildKostenPieData', () => {
-    it('includes kaufpreis as a numeric value when stored as string (InputField passes strings)', () => {
+describe('buildEigenkapitalPieData', () => {
+    it('normal case: Eigenkapital slice = kaufpreis - darlehen, Nebenkosten at full value', () => {
         const state = {
-            kaufpreis: '250000', // InputField stores raw string from e.target.value
-            berechneteNebenkosten: { makler: 3750, notar: 1500, grunderwerbssteuer: 12500, sonstige: 0 }
+            kaufpreis: 200000,
+            gesamtDarlehen: 160000,
+            berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 0 }
         }
-        const data = buildKostenPieData(state)
-        const kaufpreisEntry = data.find(d => d.name === 'Kaufpreis')
-        expect(kaufpreisEntry).toBeDefined()
-        expect(kaufpreisEntry.value).toBe(250000)
+        const data = buildEigenkapitalPieData(state)
+        const ek = data.find(d => d.name === 'Eigenkapital')
+        expect(ek).toBeDefined()
+        expect(ek.value).toBe(40000) // 200000 - 160000
+        const makler = data.find(d => d.name === 'Makler')
+        expect(makler.value).toBe(6000)
+        const notar = data.find(d => d.name === 'Notar')
+        expect(notar.value).toBe(2000)
+        const grest = data.find(d => d.name === 'Grunderwerbssteuer')
+        expect(grest.value).toBe(10000)
+        // sonstige = 0, should be filtered out
+        expect(data.find(d => d.name === 'Sonstige')).toBeUndefined()
     })
 
-    it('excludes items with value 0 from the pie', () => {
+    it('overfinanced kaufpreis: no Eigenkapital slice, Nebenkosten scaled proportionally', () => {
+        // kaufpreis=200k, darlehen=210k → kaufpreisEigen=-10k
+        // nebenkosten total=20k, eigenkapital=10k → scaleFactor=0.5
         const state = {
-            kaufpreis: 100000,
-            berechneteNebenkosten: { makler: 0, notar: 500, grunderwerbssteuer: 0, sonstige: 0 }
+            kaufpreis: 200000,
+            gesamtDarlehen: 210000,
+            berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
         }
-        const data = buildKostenPieData(state)
-        expect(data.find(d => d.name === 'Makler')).toBeUndefined()
-        expect(data.find(d => d.name === 'Notar')).toBeDefined()
+        const data = buildEigenkapitalPieData(state)
+        expect(data.find(d => d.name === 'Eigenkapital')).toBeUndefined()
+        const makler = data.find(d => d.name === 'Makler')
+        expect(makler.value).toBeCloseTo(3000) // 6000 * 0.5
+        const notar = data.find(d => d.name === 'Notar')
+        expect(notar.value).toBeCloseTo(1000) // 2000 * 0.5
+        const grest = data.find(d => d.name === 'Grunderwerbssteuer')
+        expect(grest.value).toBeCloseTo(5000) // 10000 * 0.5
+        const sonstige = data.find(d => d.name === 'Sonstige')
+        expect(sonstige.value).toBeCloseTo(1000) // 2000 * 0.5
+        // total equity check
+        const total = data.reduce((sum, d) => sum + d.value, 0)
+        expect(total).toBeCloseTo(10000) // eigenkapital
+    })
+
+    it('fully overfinanced (eigenkapital <= 0): returns empty array', () => {
+        const state = {
+            kaufpreis: 200000,
+            gesamtDarlehen: 230000,
+            berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
+        }
+        const data = buildEigenkapitalPieData(state)
+        expect(data).toEqual([])
+    })
+
+    it('string kaufpreis (InputField path): Eigenkapital value is numeric', () => {
+        const state = {
+            kaufpreis: '300000',
+            gesamtDarlehen: 240000,
+            berechneteNebenkosten: { makler: 5000, notar: 1500, grunderwerbssteuer: 15000, sonstige: 0 }
+        }
+        const data = buildEigenkapitalPieData(state)
+        const ek = data.find(d => d.name === 'Eigenkapital')
+        expect(ek.value).toBe(60000)
     })
 
     it('falls back to kaufnebenkosten when berechneteNebenkosten is absent', () => {
         const state = {
-            kaufpreis: 200000,
-            kaufnebenkosten: { makler: 5000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 0 }
+            kaufpreis: 150000,
+            gesamtDarlehen: 100000,
+            kaufnebenkosten: { makler: 3000, notar: 1000, grunderwerbssteuer: 7500, sonstige: 0 }
         }
-        const data = buildKostenPieData(state)
-        expect(data.find(d => d.name === 'Makler').value).toBe(5000)
+        const data = buildEigenkapitalPieData(state)
+        expect(data.find(d => d.name === 'Eigenkapital').value).toBe(50000)
+        expect(data.find(d => d.name === 'Makler').value).toBe(3000)
+    })
+
+    it('eigenkapital exactly zero returns empty array', () => {
+        const state = {
+            kaufpreis: 200000,
+            gesamtDarlehen: 220000,
+            berechneteNebenkosten: { makler: 6000, notar: 2000, grunderwerbssteuer: 10000, sonstige: 2000 }
+        }
+        const data = buildEigenkapitalPieData(state)
+        expect(data).toEqual([])
     })
 })
