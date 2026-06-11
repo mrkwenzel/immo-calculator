@@ -84,11 +84,23 @@ describe('validation utils', () => {
         it('returns valid for optional empty values', () => {
             expect(validatePercentage('').isValid).toBe(true)
         })
+
+        it('returns invalid for non-numeric string', () => {
+            const result = validatePercentage('abc')
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('gültige Zahl')
+        })
     })
 
     describe('validatePurchasePrice', () => {
         it('validates normal price', () => {
             expect(validatePurchasePrice(250000).isValid).toBe(true)
+        })
+
+        it('returns invalid for empty value (delegates to validatePositiveNumber)', () => {
+            expect(validatePurchasePrice('').isValid).toBe(false)
+            expect(validatePurchasePrice(null).isValid).toBe(false)
+            expect(validatePurchasePrice('abc').isValid).toBe(false)
         })
 
         it('warns on very low price', () => {
@@ -107,6 +119,12 @@ describe('validation utils', () => {
     describe('validateArea', () => {
         it('validates normal area', () => {
             expect(validateArea(60).isValid).toBe(true)
+        })
+
+        it('returns invalid for empty/null value (delegates to validatePositiveNumber)', () => {
+            expect(validateArea('').isValid).toBe(false)
+            expect(validateArea(null).isValid).toBe(false)
+            expect(validateArea('abc').isValid).toBe(false)
         })
 
         it('warns on very small area', () => {

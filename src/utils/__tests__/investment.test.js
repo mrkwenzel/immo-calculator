@@ -37,4 +37,34 @@ describe('calculateInvestment', () => {
         const result = calculateInvestment(state)
         expect(result.kaufpreisProQm).toBe(0)
     })
+
+    it('handles missing kaufpreis gracefully', () => {
+        const state = {
+            kaufnebenkosten: { makler: 1000, notar: 0, grunderwerbssteuer: 0, sonstige: 0 },
+            nebenkostenModus: { makler: 'absolut', notar: 'absolut', grunderwerbssteuer: 'absolut', sonstige: 'absolut' },
+            wohnflaeche: 60
+        }
+        const result = calculateInvestment(state)
+        expect(result.gesamtinvestition).toBe(1000) // 0 kaufpreis + 1000 absolute makler
+        expect(result.kaufpreisProQm).toBe(0)
+    })
+
+    it('handles missing kaufnebenkosten and modus gracefully', () => {
+        const state = { kaufpreis: 100000, wohnflaeche: 50 }
+        const result = calculateInvestment(state)
+        expect(result.gesamtnebenkosten).toBe(0)
+        expect(result.gesamtinvestition).toBe(100000)
+    })
+
+    it('handles missing nebenkostenProzentual entry gracefully (falls back to 0)', () => {
+        const state = {
+            kaufpreis: 100000,
+            kaufnebenkosten: { makler: 0, notar: 0, grunderwerbssteuer: 0, sonstige: 0 },
+            nebenkostenModus: { makler: 'prozent', notar: 'absolut', grunderwerbssteuer: 'absolut', sonstige: 'absolut' },
+            nebenkostenProzentual: {}, // missing 'makler' key — should default to 0
+            wohnflaeche: 60
+        }
+        const result = calculateInvestment(state)
+        expect(result.berechneteNebenkosten.makler).toBe(0)
+    })
 })

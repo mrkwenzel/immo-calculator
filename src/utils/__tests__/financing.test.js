@@ -58,4 +58,52 @@ describe('calculateFinancing', () => {
         const result = calculateFinancing(state)
         expect(result.berechneteFinanzierung.length).toBe(3)
     })
+
+    it('handles missing kaufpreis gracefully (defaults to 0)', () => {
+        const state = {
+            finanzierung: [
+                { darlehensbetrag: 80, modus: 'prozent', zinssatz: 4, tilgung: 2, includeInCashflow: true },
+            ]
+        }
+        const result = calculateFinancing(state)
+        // 80% of 0 = 0
+        expect(result.gesamtDarlehen).toBe(0)
+    })
+
+    it('handles legacy object finanzierung (non-array) via migration', () => {
+        const state = {
+            kaufpreis: 100000,
+            finanzierung: { darlehensbetrag: 50000, modus: 'absolut', zinssatz: 3, tilgung: 1, includeInCashflow: true }
+        }
+        const result = calculateFinancing(state)
+        expect(result.berechneteFinanzierung.length).toBe(3)
+        expect(result.berechneteFinanzierung[0].betrag).toBe(50000)
+    })
+
+    it('trims finanzierung arrays longer than 3 loans to exactly 3', () => {
+        const state = {
+            kaufpreis: 100000,
+            finanzierung: [
+                { darlehensbetrag: 10000, modus: 'absolut', zinssatz: 3, tilgung: 1 },
+                { darlehensbetrag: 10000, modus: 'absolut', zinssatz: 3, tilgung: 1 },
+                { darlehensbetrag: 10000, modus: 'absolut', zinssatz: 3, tilgung: 1 },
+                { darlehensbetrag: 10000, modus: 'absolut', zinssatz: 3, tilgung: 1 },
+            ]
+        }
+        const result = calculateFinancing(state)
+        expect(result.berechneteFinanzierung.length).toBe(3)
+        expect(result.gesamtDarlehen).toBe(30000)
+    })
+
+    it('handles loans with missing zinssatz/tilgung (defaults to 0)', () => {
+        const state = {
+            kaufpreis: 100000,
+            finanzierung: [
+                { darlehensbetrag: 50000, modus: 'absolut' }, // no zinssatz, no tilgung
+            ]
+        }
+        const result = calculateFinancing(state)
+        expect(result.berechneteFinanzierung[0].betrag).toBe(50000)
+        expect(result.berechneteFinanzierung[0].rate).toBe(0) // 0% annuity = 0 rate
+    })
 })
