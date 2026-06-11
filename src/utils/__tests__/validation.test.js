@@ -1,8 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import {
     validatePositiveNumber,
+    validateNonNegativeNumber,
     validatePercentage,
-    validatePurchasePrice
+    validatePurchasePrice,
+    validateArea,
+    validateRent,
+    validateCosts,
+    validateAncillaryCosts,
+    validateAncillaryCostsPercentage
 } from '../validation'
 
 describe('validation utils', () => {
@@ -30,6 +36,34 @@ describe('validation utils', () => {
             expect(result.isValid).toBe(false)
             expect(result.error).toContain('gültige Zahl')
         })
+
+        it('returns invalid for empty/null values', () => {
+            expect(validatePositiveNumber('').isValid).toBe(false)
+            expect(validatePositiveNumber(null).isValid).toBe(false)
+            expect(validatePositiveNumber(undefined).isValid).toBe(false)
+        })
+    })
+
+    describe('validateNonNegativeNumber', () => {
+        it('returns valid for positive numbers and zero', () => {
+            expect(validateNonNegativeNumber(100).isValid).toBe(true)
+            expect(validateNonNegativeNumber(0).isValid).toBe(true)
+        })
+
+        it('returns invalid for negative numbers', () => {
+            const result = validateNonNegativeNumber(-10)
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('kann nicht negativ sein')
+        })
+
+        it('returns valid for optional empty values', () => {
+            expect(validateNonNegativeNumber('').isValid).toBe(true)
+            expect(validateNonNegativeNumber(null).isValid).toBe(true)
+        })
+
+        it('returns invalid for non-numbers', () => {
+            expect(validateNonNegativeNumber('abc').isValid).toBe(false)
+        })
     })
 
     describe('validatePercentage', () => {
@@ -46,6 +80,10 @@ describe('validation utils', () => {
         it('returns invalid for > 100', () => {
             expect(validatePercentage(101).isValid).toBe(false)
         })
+
+        it('returns valid for optional empty values', () => {
+            expect(validatePercentage('').isValid).toBe(true)
+        })
     })
 
     describe('validatePurchasePrice', () => {
@@ -57,6 +95,67 @@ describe('validation utils', () => {
             const result = validatePurchasePrice(5000)
             expect(result.isValid).toBe(false)
             expect(result.error).toContain('unrealistisch')
+        })
+
+        it('warns on very high price', () => {
+            const result = validatePurchasePrice(200000000)
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('unrealistisch')
+        })
+    })
+
+    describe('validateArea', () => {
+        it('validates normal area', () => {
+            expect(validateArea(60).isValid).toBe(true)
+        })
+
+        it('warns on very small area', () => {
+            const result = validateArea(5)
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('unrealistisch')
+        })
+
+        it('warns on very large area', () => {
+            const result = validateArea(20000)
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('unrealistisch')
+        })
+    })
+
+    describe('validateRent', () => {
+        it('uses non-negative validation', () => {
+            expect(validateRent(500).isValid).toBe(true)
+            expect(validateRent(-10).isValid).toBe(false)
+        })
+    })
+
+    describe('validateCosts', () => {
+        it('uses non-negative validation', () => {
+            expect(validateCosts(100).isValid).toBe(true)
+            expect(validateCosts(-10).isValid).toBe(false)
+        })
+    })
+
+    describe('validateAncillaryCosts', () => {
+        it('uses non-negative validation', () => {
+            expect(validateAncillaryCosts(2000).isValid).toBe(true)
+            expect(validateAncillaryCosts(-10).isValid).toBe(false)
+        })
+    })
+
+    describe('validateAncillaryCostsPercentage', () => {
+        it('validates normal percentage', () => {
+            expect(validateAncillaryCostsPercentage(10).isValid).toBe(true)
+        })
+
+        it('warns on very high percentage', () => {
+            const result = validateAncillaryCostsPercentage(25)
+            expect(result.isValid).toBe(false)
+            expect(result.error).toContain('ungewöhnlich hoch')
+        })
+
+        it('returns invalid for out-of-range percentage', () => {
+            expect(validateAncillaryCostsPercentage(110).isValid).toBe(false)
         })
     })
 })
