@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calculateDerivedValues } from '../useCalculation'
+import { calculateDerivedValues } from '../../utils/calculations/index.js'
 
 describe('calculateDerivedValues', () => {
     const defaultState = {
