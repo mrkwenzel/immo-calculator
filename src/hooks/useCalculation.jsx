@@ -39,6 +39,10 @@ const defaultState = {
   },
   wohnflaeche: 0,
 
+  // Datumsfelder
+  kaufvertragsdatum: '',        // ISO date string YYYY-MM-DD, optional
+  besitzuebergangsdatum: '',    // ISO date string YYYY-MM-DD, optional
+
   // Mietdaten
   nettokaltmiete: 0,
   stellplatzmiete: 0,
