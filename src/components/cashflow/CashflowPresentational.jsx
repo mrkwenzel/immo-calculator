@@ -1,5 +1,5 @@
 import { formatCurrency } from '../../utils/formatters'
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 
 const CashflowTable = ({ projection }) => (
     <div className="card">
@@ -21,7 +21,7 @@ const CashflowTable = ({ projection }) => (
                 <tbody className="bg-white divide-y divide-gray-200">
                     {projection.map((row) => (
                         <tr key={row.year} className={row.year % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.yearLabel}</td>
                             <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{formatCurrency(row.monatlicheMiete)}</td>
                             <td className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${row.jahresOperativerCashflow >= 0 ? 'text-green-600' : 'text-orange-500'}`}>
                                 {formatCurrency(row.jahresOperativerCashflow)}
@@ -87,4 +87,21 @@ const CashflowSummaryCards = ({ totalCashflow, averageYearlyCashflow, years, ges
     </div>
 )
 
-export { CashflowTable, CashflowSummaryCards }
+const CashflowSincePossessionCard = ({ totalCashflow, elapsedMonths }) => (
+    <div className="card">
+        <div className="flex items-center">
+            <div className={`${totalCashflow >= 0 ? 'bg-green-500' : 'bg-red-500'} p-3 rounded-lg`}>
+                <Wallet className="h-6 w-6 text-white" />
+            </div>
+            <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Cashflow seit Besitzübergang</p>
+                <p className={`text-2xl font-bold ${totalCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatCurrency(totalCashflow)}
+                </p>
+                <p className="text-xs text-gray-500">{elapsedMonths} Monate</p>
+            </div>
+        </div>
+    </div>
+)
+
+export { CashflowTable, CashflowSummaryCards, CashflowSincePossessionCard }

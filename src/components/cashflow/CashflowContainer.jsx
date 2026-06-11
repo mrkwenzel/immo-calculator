@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useCalculation } from '../../hooks/useCalculation'
-import { calculateCashflowProjection } from '../../utils/cashflowProjection'
-import { CashflowTable, CashflowSummaryCards } from './CashflowPresentational'
+import { calculateCashflowProjection, calculateCashflowSincePossession } from '../../utils/cashflowProjection'
+import { CashflowTable, CashflowSummaryCards, CashflowSincePossessionCard } from './CashflowPresentational'
 
 const CashflowContainer = () => {
     const { state } = useCalculation()
@@ -9,12 +9,23 @@ const CashflowContainer = () => {
     const [mietSteigerung, setMietSteigerung] = useState(2)
     const [kostenSteigerung, setKostenSteigerung] = useState(2)
 
+    const startYear = state.besitzuebergangsdatum
+        ? new Date(state.besitzuebergangsdatum).getFullYear()
+        : null
+
     const projection = useMemo(() =>
-        calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung),
-        [state, years, mietSteigerung, kostenSteigerung])
+        calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung, startYear),
+        [state, years, mietSteigerung, kostenSteigerung, startYear])
+
+    const sincePossession = useMemo(() =>
+        calculateCashflowSincePossession(state, mietSteigerung, kostenSteigerung),
+        [state, mietSteigerung, kostenSteigerung])
 
     const totalCashflow = projection[projection.length - 1]?.kumuliert || 0
     const averageYearlyCashflow = totalCashflow / years
+
+    const showSincePossession = !!state.besitzuebergangsdatum &&
+        new Date(state.besitzuebergangsdatum) < new Date()
 
     return (
         <div className="space-y-6">
@@ -51,6 +62,13 @@ const CashflowContainer = () => {
                 years={years}
                 gesamtinvestition={state.gesamtinvestition}
             />
+
+            {showSincePossession && (
+                <CashflowSincePossessionCard
+                    totalCashflow={sincePossession.totalCashflow}
+                    elapsedMonths={sincePossession.elapsedMonths}
+                />
+            )}
 
             <CashflowTable projection={projection} />
 
