@@ -6,94 +6,171 @@ Eine moderne, responsive Webapp zur Berechnung und Analyse von Immobilien-Invest
 
 ### 📊 Dashboard
 
-- Übersicht aller wichtigen Kennzahlen
-- Gesamtinvestition, Renditen und Cashflow auf einen Blick
-- Schnellzugriff auf alle Funktionen
-- **NEU**: Persistente Datenspeicherung (LocalStorage)
-- **NEU**: Daten zurücksetzen Funktion
+- Übersicht aller wichtigen Kennzahlen: Gesamtinvestition, Kaufpreis pro m², Bruttomietrendite, monatlicher Cashflow
+- Investitions- und Renditeübersicht auf einen Blick
+- Persistente Datenspeicherung via LocalStorage (automatisch, 500 ms debounced)
+- Daten zurücksetzen Funktion
 
-### ✨ Eingabe & Validierung
-
-- Echtzeit-Validierung aller Eingaben
-- Warnung bei unrealistischen Werten
-- Flexible Eingabe: Absolut (€) oder Prozent (%)
-- Übersichtliche Fehlermeldungen
-
-### 🧮 Investitionsrechner
+### 🏠 Investitionsdaten
 
 - Eingabe von Kaufpreis und Wohnfläche
 - Detaillierte Kaufnebenkosten (Makler, Notar, Grunderwerbssteuer, Sonstige)
-- **Mietdaten & Hausgeld**:
-  - Trennung in umlagefähige und nicht-umlagefähige Kosten
-  - Berücksichtigung von Stellplatzmiete
-  - **Detaillierte Kennzahlen pro m²** (Miete, Hausgeld, etc.)
-  - **Berechnung der Gesamtmiete** (Kaltmiete + Stellplatz)
-- Automatische Berechnung von:
-  - Gesamtinvestition
-  - Kaufpreis pro m²
-  - Brutto- und Nettomietrendite
-- Bewertung der Investition mit Ampelsystem und **Hausgeld-Verteilung**
+- Dual-Modus-Eingabe je Nebenkostenfeld: Absolut (€) oder Prozent (%) des Kaufpreises
+- Vorlagen-Schnellwahl für typische Nebenkostenkombinationen (NebenkostenPresets)
+- Automatische Berechnung von Gesamtinvestition und Kaufpreis pro m²
 
-### 💳 Finanzierung (NEU)
+### 🏘️ Mietdaten & Hausgeld
 
-- Unterstützung für bis zu **3 separate Darlehen**
-- Einstellung von Zinssatz und Tilgung pro Darlehen
-- **Cashflow-Toggle**: Jedes Darlehen kann optional für die Cashflow-Rechnung aktiviert/deaktiviert werden
+- Nettokaltmiete und Stellplatzmiete (separat)
+- Hausgeld aufgeteilt in umlagefähige und nicht-umlagefähige Kosten
+- Kennzahlen: Brutto- und Nettomietrendite, Hausgeld-Quote
+- Ampel-Bewertung der Investitionsqualität inkl. Hausgeld-Verteilung
+
+### 💳 Finanzierung
+
+- Bis zu 3 separate Darlehen konfigurierbar
+- Pro Darlehen: Darlehensbetrag (absolut oder % des Kaufpreises), Zinssatz, Tilgung
+- Cashflow-Toggle je Darlehen: optionale Ein-/Ausblendung aus der Cashflow-Rechnung
 - Automatische Berechnung von:
-  - **Bankrate (gesamt)**: Summe aller Raten
-  - Darlehenssumme gesamt
-  - Cashflow nach Bank (Netto-Netto unter Berücksichtigung der gewählten Darlehen)
-  - **Eigenkapital-Rendite (EK-Rendite)** mit Hebel-Bewertung
+  - Monatliche Rate (Annuität) je Darlehen
+  - Gesamtkapitaldienst (alle Darlehen)
+  - Eigenkapital und Eigenkapital-Rendite (EK-Rendite) mit Hebel-Bewertung
+  - Cashflow nach Bank (nur relevante Darlehen)
 
 ### 💰 Cashflow-Analyse
 
-- Langfristige Cashflow-Projektion (1-30 Jahre)
-- Berücksichtigung von Miet- und Kostensteigerungen
-- **Integration der Finanzierung** in die Projektion
-- Break-Even Analyse (Amortisation nach Bank)
-- ROI-Berechnung
-- Detaillierte Jahrestabelle
+- Langfristige Cashflow-Projektion (1–30 Jahre)
+- Konfigurierbare Miet- und Kostensteigerung pro Jahr
+- Zusammenfassungskacheln: kumulierter Cashflow, durchschnittlicher Jahres-Cashflow, ROI
+- Detaillierte Jahrestabelle mit operativem Cashflow, Bankrate und kumuliertem Cashflow
+- Break-Even-Analyse (Jahr der Amortisation der Gesamtinvestition)
 
 ### 📈 Diagramme & Visualisierungen
 
-- Jährliche Cashflow-Entwicklung (Stacked: Miete vs. Operativ vs. Bank)
-- Kumulierter Cashflow über Zeit (nach Bankrate)
-- Investitionskosten-Verteilung (Kreisdiagramm)
-- Rendite-Vergleich (Brutto vs. Netto vs. EK-Rendite)
-- Kennzahlen-Übersicht
+- Balkendiagramm: Einnahmen vs. Kosten inkl. Finanzierung (gestapelt, jährlich)
+- Liniendiagramm: Kumulierter Cashflow nach Bank über Zeit
+- Kreisdiagramm: Investitionskosten-Verteilung (Kaufpreis + Nebenkosten)
+- Balkendiagramm: Rendite-Vergleich (Brutto, Netto, EK-Rendite)
+
+---
 
 ## Technische Details
 
 ### Frontend-Stack
 
-- **React 18** - Moderne UI-Bibliothek
-- **Vite** - Schneller Build-Tool
-- **Tailwind CSS** - Utility-first CSS Framework (Custom Design System)
-- **Recharts** - Responsive Diagramm-Bibliothek
-- **React Router** - Client-side Routing
-- **Lucide React** - Moderne Icon-Bibliothek
+| Technologie | Version | Zweck |
+|---|---|---|
+| React | 19 | UI-Bibliothek |
+| Vite | 8 | Build-Tool & Dev-Server |
+| Tailwind CSS | 4 | Utility-first CSS Framework |
+| Recharts | 3 | Responsive Diagramm-Bibliothek |
+| React Router | 7 | Client-side Routing |
+| Lucide React | 1 | Icon-Bibliothek |
 
 ### Responsive Design
 
-- **Mobile First** - Optimiert für Smartphones
-- **Tablet-freundlich** - Angepasste Layouts für Tablets
-- **Desktop-optimiert** - Vollständige Funktionalität auf großen Bildschirmen
-- **Touch-freundlich** - Große Buttons und einfache Navigation
+- **Mobile First** – optimiert für Smartphones
+- **Tablet-freundlich** – angepasste Layouts
+- **Desktop-optimiert** – vollständige Funktionalität auf großen Bildschirmen
 
 ### ✅ Tests & Qualitätssicherung
 
-- **Vitest** - Schnelles Testing-Framework
-- **React Testing Library** - Component Testing
-- **Automatische Tests** im Docker-Build-Prozess (fail-on-error)
+- **Vitest** – schnelles Testing-Framework (mit Coverage)
+- **React Testing Library** – Component Testing
+- 100 % Abdeckung aller Berechnungs- und Validierungs-Utilities
+- Automatische Tests im Docker-Build-Prozess (fail-on-error)
 
-## Installation & Start (lokal)
+---
+
+## Architektur
+
+### Projektstruktur
+
+```
+src/
+├── components/
+│   ├── shared/
+│   │   └── forms/
+│   │       ├── InputField.jsx        # Generisches Eingabefeld
+│   │       └── DualModeInput.jsx     # Absolut/Prozent-Umschalter
+│   ├── investment/
+│   │   ├── InvestmentContainer.jsx   # Zustand & Logik
+│   │   ├── InvestmentPresentational.jsx
+│   │   ├── BasicDataForm.jsx
+│   │   ├── AncillaryCostsForm.jsx
+│   │   ├── RentalDataForm.jsx
+│   │   ├── FinancingForm.jsx
+│   │   ├── ResultsDisplay.jsx
+│   │   └── InvestmentRating.jsx
+│   ├── financing/
+│   │   ├── FinancingContainer.jsx
+│   │   └── FinancingPresentational.jsx
+│   ├── cashflow/
+│   │   ├── CashflowContainer.jsx
+│   │   └── CashflowPresentational.jsx
+│   ├── Navigation.jsx
+│   ├── Dashboard.jsx
+│   ├── NebenkostenPresets.jsx
+│   ├── InvestmentPage.jsx
+│   ├── RentPage.jsx
+│   ├── FinancingPage.jsx
+│   ├── CashflowAnalysis.jsx
+│   └── Charts.jsx
+├── hooks/
+│   ├── useCalculation.jsx            # Context, Reducer, LocalStorage
+│   └── useLocalStorage.jsx
+├── utils/
+│   ├── calculations/
+│   │   ├── index.js                  # Orchestrator: calculateDerivedValues()
+│   │   ├── investment.js             # Gesamtinvestition, Renditen
+│   │   ├── financing.js              # Annuitäten, EK-Rendite
+│   │   └── cashflow.js               # Operativer & netto Cashflow
+│   ├── cashflowProjection.js         # Langfrist-Projektion
+│   ├── formatters.js                 # Währungs- & Prozentformatierung
+│   └── validation.js                 # Eingabevalidierung
+├── App.jsx                           # Routing & Provider
+├── main.jsx
+└── index.css
+```
+
+### Berechnungslogik
+
+```
+useCalculation (Reducer)
+  └── calculateDerivedValues (calculations/index.js)
+        ├── calculateInvestment()   → Gesamtinvestition, Renditen
+        ├── calculateFinancing()   → Annuitäten, EK-Rendite
+        └── calculateCashflow()    → Cashflow nach Bank
+```
+
+Kernformeln:
+
+| Kennzahl | Formel |
+|---|---|
+| Gesamtinvestition | Kaufpreis + Kaufnebenkosten |
+| Hausgeld | Umlagefähig + Nicht-umlagefähig |
+| Operativer Cashflow | Gesamtmiete − Nicht-umlagefähiges Hausgeld |
+| Cashflow nach Bank | Operativer Cashflow − Kapitaldienstrate (relevante Darlehen) |
+| Bruttomietrendite | (Jahresmiete / Gesamtinvestition) × 100 |
+| Nettomietrendite | (Jahresmiete − Jahreskosten) / Gesamtinvestition × 100 |
+| EK-Rendite | (Cashflow nach Bank × 12 / Eigenkapital) × 100 |
+
+---
+
+## Installation & Start
 
 ```bash
 # Dependencies installieren
 npm install
 
-# Development Server starten
+# Development Server starten (http://localhost:5173)
 npm run dev
+
+# Tests ausführen
+npm test
+
+# Test-Coverage
+npm run test:coverage
 
 # Für Produktion bauen
 npm run build
@@ -102,81 +179,24 @@ npm run build
 npm run preview
 ```
 
-## Docker Image bauen
-
-Folgendes Kommando aufrufen:
+## Docker
 
 ```bash
+# Image bauen
 docker build -t immo-calculator .
-```
 
-## Container starten
-
-```bash
+# Container starten (Port 8080)
 docker run -p 8080:8080 immo-calculator
 ```
 
-## App aufrufen
+Die App ist dann erreichbar unter `http://localhost:8080`.
 
-Die Webapp läuft standardmäßig auf `http://localhost:8080` (Docker) oder Port 5173 (lokal)
+---
 
 ## Verwendung
 
-1. **Investition**: Eingabe der Grunddaten und Kaufnebenkosten
-2. **Miete**: Verwaltung der Einnahmen und Hausgeld-Struktur
-3. **Finanzierung**: Konfiguration der Bankdarlehen
-4. **Cashflow**: Langfristige Analyse der Rentabilität
-5. **Diagramme**: Grafische Auswertung der Ergebnisse
-
-### Berechnungen
-
-Die Webapp berechnet automatisch:
-
-- **Gesamtinvestition** = Kaufpreis + Nebenkosten
-- **Hausgeld** = Umlagefähig + Nicht-umlagefähig
-- **Operativer Cashflow** = Gesamtmiete - nicht-umlagefähiges Hausgeld
-- **Cashflow nach Bank** = Operativer Cashflow - Bankrate (der gewählten Darlehen)
-- **Bruttomietrendite** = (Jahresmiete / Gesamtinvestition) × 100
-- **Eigenkapital-Rendite** = ((Monatlicher Cashflow nach Bank × 12) / Eigenkapital) × 100
-
-## Projektstruktur
-
-```text
-src/
-├── components/          # React Komponenten
-│   ├── investment/      # Formulare & Anzeigen
-│   │   ├── BasicDataForm.jsx
-│   │   ├── AncillaryCostsForm.jsx
-│   │   ├── RentalDataForm.jsx
-│   │   ├── FinancingForm.jsx
-│   │   ├── DualModeInput.jsx
-│   │   ├── ResultsDisplay.jsx
-│   │   └── InvestmentRating.jsx
-│   ├── Navigation.jsx       # Hauptnavigation
-│   ├── Dashboard.jsx        # Dashboard-Übersicht
-│   ├── NebenkostenPresets.jsx # Vorlagen für Kaufnebenkosten
-│   ├── InvestmentPage.jsx # Seite Investition
-│   ├── RentPage.jsx       # Seite Miete
-│   ├── FinancingPage.jsx  # Seite Finanzierung
-│   ├── CashflowAnalysis.jsx # Cashflow-Analyse
-│   ├── Charts.jsx       # Diagramme
-│   └── InputField.jsx   # Wiederverwendbare Eingabekomponente
-├── hooks/
-│   ├── useCalculation.jsx  # State Management & Berechnung
-│   └── useLocalStorage.jsx # Daten-Persistenz
-├── utils/
-│   └── validation.js    # Validierungslogik
-├── App.jsx             # Routing & Providers
-├── main.jsx           # Entry Point
-└── index.css          # Styles
-```
-
-## Weitere mögliche Anpassungen
-
-Die Webapp kann einfach erweitert werden:
-
-- Neue Berechnungsfelder hinzufügen
-- Zusätzliche Diagrammtypen
-- Export-Funktionen (PDF, Excel)
-- Datenbank-Anbindung für Speicherung
-- Mehrere Immobilien verwalten
+1. **Investition** – Kaufpreis, Wohnfläche und Kaufnebenkosten eingeben
+2. **Miete** – Nettokaltmiete, Stellplatz und Hausgeld erfassen
+3. **Finanzierung** – bis zu 3 Darlehen konfigurieren
+4. **Cashflow** – Projektionszeitraum und Steigerungsraten einstellen, Jahrestabelle analysieren
+5. **Diagramme** – grafische Auswertung aller Kennzahlen
