@@ -2,7 +2,10 @@ import { useState, useMemo } from 'react'
 import { useCalculation } from '../hooks/useCalculation'
 import { calculateCashflowProjection } from '../utils/cashflowProjection'
 import { formatCurrency } from '../utils/formatters'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, ReferenceLine
+} from 'recharts'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -25,13 +28,17 @@ const Charts = () => {
   const [years] = useState(10)
   const [mietSteigerung] = useState(2)
   const [kostenSteigerung] = useState(2)
-  
+
+  const startYear = state.besitzuebergangsdatum
+    ? new Date(state.besitzuebergangsdatum).getFullYear()
+    : null
+
   // Cashflow-Daten für Diagramme
   const chartData = useMemo(() => {
-    const rawProjection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung)
-    
+    const rawProjection = calculateCashflowProjection(state, years, mietSteigerung, kostenSteigerung, startYear)
+
     return rawProjection.map(row => ({
-      year: `Jahr ${row.year}`,
+      yearLabel: row.yearLabel,
       miete: Math.round(row.jahresmiete),
       operativ: Math.round(row.jahreskosten),
       bank: Math.round(row.jahresBankrateGesamt),
@@ -39,8 +46,14 @@ const Charts = () => {
       cashflow: Math.round(row.nettoCashflow),
       kumuliert: Math.round(row.kumuliert)
     }))
-  }, [state, years, mietSteigerung, kostenSteigerung])
-  
+  }, [state, years, mietSteigerung, kostenSteigerung, startYear])
+
+  // "Heute" reference line: only when startYear is set and today's year is in range
+  const todayYear = new Date().getFullYear()
+  const todayLabel = startYear
+    ? (chartData.find(d => d.yearLabel.includes(`(${todayYear})`))?.yearLabel ?? null)
+    : null
+
   // Kostenverteilung für Pie Chart
   const kostenData = useMemo(() => {
     const actualNebenkosten = state.berechneteNebenkosten || state.kaufnebenkosten
@@ -52,7 +65,7 @@ const Charts = () => {
       { name: 'Sonstige', value: actualNebenkosten.sonstige, color: '#8b5cf6' }
     ].filter(item => item.value > 0)
   }, [state.kaufpreis, state.berechneteNebenkosten, state.kaufnebenkosten])
-  
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -73,13 +86,21 @@ const Charts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
+              <XAxis dataKey="yearLabel" />
               <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="miete" fill="#10b981" name="Mieteinnahmen" />
               <Bar dataKey="operativ" stackId="a" fill="#ea580c" name="Bewirtschaftung" />
               <Bar dataKey="bank" stackId="a" fill="#ef4444" name="Bankrate" />
+              {todayLabel && (
+                <ReferenceLine
+                  x={todayLabel}
+                  stroke="#ef4444"
+                  strokeDasharray="6 3"
+                  label={{ value: 'Heute', position: 'top', fill: '#ef4444', fontSize: 12 }}
+                />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -94,7 +115,7 @@ const Charts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
+              <XAxis dataKey="yearLabel" />
               <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
@@ -114,6 +135,14 @@ const Charts = () => {
                 name="Jahres-Cashflow (Netto)"
                 dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
               />
+              {todayLabel && (
+                <ReferenceLine
+                  x={todayLabel}
+                  stroke="#ef4444"
+                  strokeDasharray="6 3"
+                  label={{ value: 'Heute', position: 'top', fill: '#ef4444', fontSize: 12 }}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -157,21 +186,9 @@ const Charts = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={[
-                  {
-                    name: 'Brutto',
-                    wert: state.bruttomietrendite || 0,
-                    fill: '#3b82f6'
-                  },
-                  {
-                    name: 'Netto (Op.)',
-                    wert: state.nettomietrendite || 0,
-                    fill: '#8b5cf6'
-                  },
-                  {
-                    name: 'EK-Rendite',
-                    wert: state.eigenkapitalRendite || 0,
-                    fill: '#10b981'
-                  }
+                  { name: 'Brutto', wert: state.bruttomietrendite || 0 },
+                  { name: 'Netto (Op.)', wert: state.nettomietrendite || 0 },
+                  { name: 'EK-Rendite', wert: state.eigenkapitalRendite || 0 }
                 ]}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
@@ -180,15 +197,13 @@ const Charts = () => {
                 <YAxis tickFormatter={(value) => `${value.toFixed(1)}%`} />
                 <Tooltip formatter={(value) => `${value.toFixed(2)}%`} cursor={{ fill: 'transparent' }} />
                 <Bar dataKey="wert" name="Rendite %">
-                  {
-                    [
-                      { fill: '#3b82f6' },
-                      { fill: '#8b5cf6' },
-                      { fill: '#10b981' }
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))
-                  }
+                  {[
+                    { fill: '#3b82f6' },
+                    { fill: '#8b5cf6' },
+                    { fill: '#10b981' }
+                  ].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
